@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BSL Quest — Aprender BSL do Zero até à Fluência</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            duo: {
+              green: '#58CC02',
+              greenDark: '#46A302',
+              greenLight: '#D7FFB8',
+              blue: '#1CB0F6',
+              blueDark: '#1485BD',
+              blueLight: '#DDF4FF',
+              orange: '#FF9600',
+              orangeDark: '#CC7800',
+              orangeLight: '#FFF0D6',
+              purple: '#CE82FF',
+              purpleDark: '#A552DB',
+              red: '#FF4B4B',
+              redDark: '#CC3333',
+              redLight: '#FFE5E5',
+              ink: '#3C3C3C',
+              muted: '#777777',
+              border: '#E5E5E5',
+              surface: '#F7F7F7',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #FFFFFF;
+      color: #3C3C3C;
+      overflow-x: hidden;
+    }
+    /* Duolingo-inspired chunky 3D buttons */
+    .btn-3d {
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease;
+    }
+    .btn-3d:active:not(:disabled) {
+      transform: translateY(3px);
+    }
+    .btn-green {
+      background-color: #58CC02;
+      color: #FFFFFF;
+      box-shadow: 0 4px 0 #46A302;
+    }
+    .btn-green:hover:not(:disabled) {
+      background-color: #61E002;
+    }
+    .btn-green:active:not(:disabled) {
+      box-shadow: 0 1px 0 #46A302;
+    }
+    .btn-blue {
+      background-color: #1CB0F6;
+      color: #FFFFFF;
+      box-shadow: 0 4px 0 #1485BD;
+    }
+    .btn-blue:hover:not(:disabled) {
+      background-color: #2AB9FC;
+    }
+    .btn-blue:active:not(:disabled) {
+      box-shadow: 0 1px 0 #1485BD;
+    }
+    .btn-orange {
+      background-color: #FF9600;
+      color: #FFFFFF;
+      box-shadow: 0 4px 0 #CC7800;
+    }
+    .btn-orange:hover:not(:disabled) {
+      background-color: #FFA31F;
+    }
+    .btn-orange:active:not(:disabled) {
+      box-shadow: 0 1px 0 #CC7800;
+    }
+    .btn-neutral {
+      background-color: #FFFFFF;
+      color: #3C3C3C;
+      border: 2px solid #E5E5E5;
+      box-shadow: 0 3px 0 #E5E5E5;
+    }
+    .btn-neutral:hover:not(:disabled) {
+      background-color: #F7F7F7;
+    }
+    .btn-neutral:active:not(:disabled) {
+      box-shadow: 0 1px 0 #E5E5E5;
+    }
+
+    @keyframes flamePulse {
+      0%, 100% { transform: scale(1) rotate(-2deg); }
+      50% { transform: scale(1.08) rotate(2deg); }
+    }
+    .flame-active {
+      animation: flamePulse 2.2s ease-in-out infinite;
+    }
+
+    /* Custom scrollbar for clean tables/lists */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F7F7F7;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D4D4D4;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #B8B8B8;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-white text-duo-ink">
+
+  <!-- Toast / Feedback Banner (replaces alert/confirm) -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-3 sm:px-0"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b-2 border-duo-border">
+    <div class="max-w-6xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2">
+      <!-- Brand -->
+      <button onclick="switchTab('trilha')" class="flex items-center gap-2.5 text-left focus:outline-none group">
+        <div class="w-10 h-10 rounded-2xl bg-duo-green flex items-center justify-center text-white font-extrabold text-lg shadow-[0_3px_0_#46A302] group-hover:scale-105 transition-transform">
+          🤟
+        </div>
+        <div>
+          <span class="font-extrabold text-lg sm:text-xl tracking-tight text-duo-green">BSL Quest</span>
+          <span class="hidden md:inline-block ml-2 text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-duo-blueLight text-duo-blueDark">
+            A1 → Fluência
+          </span>
+        </div>
+      </button>
+
+      <!-- Desktop Navigation Tabs -->
+      <nav class="hidden lg:flex items-center gap-1">
+        <button data-nav="trilha" onclick="switchTab('trilha')" class="nav-btn px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors">
+          <span>🗺️</span> <span>Trilha &amp; Níveis</span>
+        </button>
+        <button data-nav="pratica" onclick="switchTab('pratica')" class="nav-btn px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors">
+          <span>🎯</span> <span>Exercícios</span>
+        </button>
+        <button data-nav="banco" onclick="switchTab('banco')" class="nav-btn px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors">
+          <span>🎬</span> <span>Banco de Vídeos</span>
+        </button>
+        <button data-nav="calendario" onclick="switchTab('calendario')" class="nav-btn px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors">
+          <span>📅</span> <span>Calendário &amp; Tempo</span>
+        </button>
+      </nav>
+
+      <!-- Streak Flame & Live Timer Pill -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Active Session Timer Badge -->
+        <div id="live-timer-badge" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-duo-blueLight border-2 border-duo-blue/30 text-duo-blueDark text-xs font-extrabold" title="Tempo ativo na sessão atual">
+          <span>⏱️</span>
+          <span id="live-timer-text">00:00</span>
+        </div>
+
+        <!-- Duolingo-style Streak Flame ('Foguinho') -->
+        <button onclick="switchTab('calendario')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-duo-orangeLight border-2 border-duo-orange/40 hover:border-duo-orange transition-colors" title="Ver ofensiva (foguinho) e calendário de prática">
+          <span id="header-flame-icon" class="text-xl leading-none select-none">🔥</span>
+          <span id="header-streak-count" class="font-extrabold text-sm sm:text-base text-duo-orangeDark">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile / Tablet Sub-navigation Bar -->
+    <div class="flex lg:hidden border-t border-duo-border bg-duo-surface/70 overflow-x-auto no-scrollbar">
+      <div class="max-w-6xl mx-auto w-full grid grid-cols-4 divide-x divide-duo-border">
+        <button data-nav="trilha" onclick="switchTab('trilha')" class="nav-btn py-2.5 px-2 text-xs font-bold flex flex-col items-center justify-center gap-0.5">
+          <span>🗺️</span>
+          <span>Trilha</span>
+        </button>
+        <button data-nav="pratica" onclick="switchTab('pratica')" class="nav-btn py-2.5 px-2 text-xs font-bold flex flex-col items-center justify-center gap-0.5">
+          <span>🎯</span>
+          <span>Exercícios</span>
+        </button>
+        <button data-nav="banco" onclick="switchTab('banco')" class="nav-btn py-2.5 px-2 text-xs font-bold flex flex-col items-center justify-center gap-0.5">
+          <span>🎬</span>
+          <span>Vídeos</span>
+        </button>
+        <button data-nav="calendario" onclick="switchTab('calendario')" class="nav-btn py-2.5 px-2 text-xs font-bold flex flex-col items-center justify-center gap-0.5">
+          <span>📅</span>
+          <span>Calendário</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 py-6 sm:py-8">
+
+    <!-- ==================== TAB 1: TRILHA & NÍVEIS ==================== -->
+    <section id="tab-trilha" class="tab-panel space-y-8">
+      <!-- Hero / Progress Overview Card -->
+      <div class="rounded-3xl border-2 border-duo-border bg-gradient-to-br from-duo-greenLight/50 via-white to-duo-blueLight/40 p-5 sm:p-7 shadow-sm">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div class="space-y-2 max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-duo-border text-xs font-extrabold text-duo-greenDark">
+              <span>🇬🇧</span>
+              <span>BRITISH SIGN LANGUAGE • CAMINHO ATÉ À FLUÊNCIA</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-duo-ink leading-tight">
+              Aprende BSL passo a passo com o teu banco de vídeos
+            </h1>
+            <p class="text-sm sm:text-base text-duo-muted leading-relaxed">
+              A <strong>Unidade 1 (Nível A1 completo)</strong> já vem estruturada em <strong>5 blocos temáticos</strong>. Adiciona links de vídeos (YouTube com tempo exato ou MP4/WebM) para as palavras e frases, treina nos exercícios interativos e adiciona novas unidades (<strong>A2, B1, B2, C1, C2</strong>) sempre que avançares.
+            </p>
+          </div>
+
+          <!-- Quick Stats Grid -->
+          <div class="grid grid-cols-3 gap-3 shrink-0">
+            <div class="rounded-2xl bg-white border-2 border-duo-border p-3.5 text-center">
+              <div id="stat-videos-ready" class="text-xl sm:text-2xl font-extrabold text-duo-blueDark">0/0</div>
+              <div class="text-[11px] font-bold text-duo-muted uppercase mt-0.5">Vídeos prontos</div>
+            </div>
+            <div class="rounded-2xl bg-white border-2 border-duo-border p-3.5 text-center">
+              <div id="stat-mastered" class="text-xl sm:text-2xl font-extrabold text-duo-greenDark">0</div>
+              <div class="text-[11px] font-bold text-duo-muted uppercase mt-0.5">Dominados</div>
+            </div>
+            <div class="rounded-2xl bg-white border-2 border-duo-border p-3.5 text-center">
+              <div id="stat-minutes-today" class="text-xl sm:text-2xl font-extrabold text-duo-orangeDark">0m</div>
+              <div class="text-[11px] font-bold text-duo-muted uppercase mt-0.5">Hoje</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grammar Tip Banner for A1 -->
+        <div class="mt-5 pt-4 border-t border-duo-border/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
+          <div class="flex items-start sm:items-center gap-2.5 text-duo-ink">
+            <span class="text-lg">💡</span>
+            <span>
+              <strong>Regra de ouro no Nível A1:</strong> Ordem frequente de <em>Tópico + Comentário</em>, <strong>sobrancelhas levantadas</strong> em perguntas de Sim/Não e <strong>sobrancelhas franzidas</strong> em perguntas com <code>WHAT</code>, <code>WHERE</code>, <code>WHO</code>, <code>WHEN</code> e <code>HOW</code>.
+            </span>
+          </div>
+          <button onclick="openNewUnitModal()" class="btn-3d btn-blue px-4 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap self-start sm:self-auto">
+            + Adicionar Unidade / Nível (A2–C2)
+          </button>
+        </div>
+      </div>
+
+      <!-- Units & Blocks Container -->
+      <div id="units-container" class="space-y-8"></div>
+    </section>
+
+    <!-- ==================== TAB 2: EXERCÍCIOS INTERATIVOS ==================== -->
+    <section id="tab-pratica" class="tab-panel hidden space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-duo-surface border-2 border-duo-border rounded-3xl p-5">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-duo-ink">Centro de Exercícios BSL</h2>
+          <p class="text-sm text-duo-muted mt-0.5">
+            Escolhe um bloco e o modo de treino. Os exercícios funcionam mesmo com vídeos por adicionar, mas tornam-se muito mais ricos com os teus vídeos ligados!
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5">
+          <select id="exercise-block-select" onchange="resetExerciseSession()" class="px-3.5 py-2.5 rounded-2xl border-2 border-duo-border bg-white font-bold text-sm text-duo-ink focus:outline-none focus:border-duo-blue">
+            <option value="ALL">Todos os Blocos (Unidade 1 A1)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Exercise Mode Selector Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button id="mode-card-learn" onclick="selectExerciseMode('learn')" class="mode-card text-left p-5 rounded-3xl border-2 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-2xl">📖</span>
+            <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-duo-greenLight text-duo-greenDark">PASSO 1</span>
+          </div>
+          <h3 class="font-extrabold text-base text-duo-ink">Modo Aprender (Cartões)</h3>
+          <p class="text-xs sm:text-sm text-duo-muted mt-1">
+            Vê o vídeo do sinal ou frase, lê a glosa BSL, expressão facial e marca quando dominares.
+          </p>
+        </button>
+
+        <button id="mode-card-recognize" onclick="selectExerciseMode('recognize')" class="mode-card text-left p-5 rounded-3xl border-2 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-2xl">👀</span>
+            <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-duo-blueLight text-duo-blueDark">PASSO 2</span>
+          </div>
+          <h3 class="font-extrabold text-base text-duo-ink">Reconhecimento Visual</h3>
+          <p class="text-xs sm:text-sm text-duo-muted mt-1">
+            Observa o sinal ou frase em BSL e escolhe o significado correto sem ajuda prévia.
+          </p>
+        </button>
+
+        <button id="mode-card-sentence" onclick="selectExerciseMode('sentence')" class="mode-card text-left p-5 rounded-3xl border-2 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-2xl">🧩</span>
+            <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-duo-orangeLight text-duo-orangeDark">PASSO 3</span>
+          </div>
+          <h3 class="font-extrabold text-base text-duo-ink">Construção de Frases</h3>
+          <p class="text-xs sm:text-sm text-duo-muted mt-1">
+            Ordena as glosas na estrutura BSL e compara com o vídeo da frase completa.
+          </p>
+        </button>
+      </div>
+
+      <!-- Active Exercise Stage -->
+      <div id="exercise-stage" class="rounded-3xl border-2 border-duo-border bg-white p-5 sm:p-7 shadow-sm min-h-[380px]"></div>
+    </section>
+
+    <!-- ==================== TAB 3: BANCO DE VÍDEOS ==================== -->
+    <section id="tab-banco" class="tab-panel hidden space-y-6">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-duo-surface border-2 border-duo-border rounded-3xl p-5">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-duo-ink">Meu Banco de Vídeos BSL</h2>
+          <p class="text-sm text-duo-muted mt-0.5">
+            Cola links do <strong>YouTube</strong> (com ou sem marca de tempo, ex.: <code>?t=14s</code>) ou links diretos de vídeo (<code>.mp4</code> / <code>.webm</code>) para cada palavra e frase.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="exportProgressJSON()" class="btn-3d btn-neutral px-3.5 py-2 rounded-2xl font-bold text-xs sm:text-sm">
+            ⬇️ Exportar Dados
+          </button>
+          <label class="btn-3d btn-neutral px-3.5 py-2 rounded-2xl font-bold text-xs sm:text-sm cursor-pointer">
+            ⬆️ Importar JSON
+            <input type="file" accept=".json" onchange="importProgressJSON(event)" class="hidden" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Filters Bar -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <input id="bank-search" oninput="renderMediaBank()" type="text" placeholder="Pesquisar sinal, glosa ou frase..." class="px-4 py-2.5 rounded-2xl border-2 border-duo-border bg-white text-sm font-medium focus:outline-none focus:border-duo-blue" />
+
+        <select id="bank-unit-filter" onchange="renderMediaBank()" class="px-3.5 py-2.5 rounded-2xl border-2 border-duo-border bg-white text-sm font-bold focus:outline-none focus:border-duo-blue">
+          <option value="ALL">Todas as Unidades</option>
+        </select>
+
+        <select id="bank-type-filter" onchange="renderMediaBank()" class="px-3.5 py-2.5 rounded-2xl border-2 border-duo-border bg-white text-sm font-bold focus:outline-none focus:border-duo-blue">
+          <option value="ALL">Palavras e Frases</option>
+          <option value="word">Apenas Palavras (Sinais)</option>
+          <option value="sentence">Apenas Frases Completas</option>
+        </select>
+
+        <select id="bank-status-filter" onchange="renderMediaBank()" class="px-3.5 py-2.5 rounded-2xl border-2 border-duo-border bg-white text-sm font-bold focus:outline-none focus:border-duo-blue">
+          <option value="ALL">Todos os Estados</option>
+          <option value="missing">Sem vídeo ainda</option>
+          <option value="linked">Com vídeo ligado</option>
+          <option value="mastered">Dominados</option>
+        </select>
+      </div>
+
+      <!-- Media Items List -->
+      <div id="media-bank-list" class="space-y-3"></div>
+    </section>
+
+    <!-- ==================== TAB 4: CALENDÁRIO & TEMPO ==================== -->
+    <section id="tab-calendario" class="tab-panel hidden space-y-6">
+      <!-- Streak Flame Hero Card -->
+      <div class="rounded-3xl border-2 border-duo-orange/40 bg-gradient-to-r from-duo-orangeLight via-white to-duo-orangeLight/50 p-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div class="flex items-center gap-4 sm:gap-5">
+            <div class="w-20 h-20 rounded-3xl bg-white border-2 border-duo-orange/40 flex items-center justify-center shadow-sm shrink-0">
+              <span id="cal-flame-big" class="text-5xl select-none">🔥</span>
+            </div>
+            <div>
+              <div class="text-xs font-extrabold uppercase tracking-wider text-duo-orangeDark">Ofensiva Diária (Foguinho)</div>
+              <div class="flex items-baseline gap-2 mt-0.5">
+                <span id="cal-streak-days" class="text-4xl font-extrabold text-duo-ink">0</span>
+                <span class="text-base font-bold text-duo-muted">dias seguidos</span>
+              </div>
+              <p id="cal-streak-message" class="text-xs sm:text-sm text-duo-muted mt-1">
+                Pratica hoje para acender ou manter o teu foguinho ativo!
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 shrink-0">
+            <div class="rounded-2xl bg-white border-2 border-duo-border p-4 text-center">
+              <div id="cal-total-minutes" class="text-2xl font-extrabold text-duo-blueDark">0 min</div>
+              <div class="text-[11px] font-bold text-duo-muted uppercase mt-0.5">Tempo total</div>
+            </div>
+            <div class="rounded-2xl bg-white border-2 border-duo-border p-4 text-center">
+              <div id="cal-active-days" class="text-2xl font-extrabold text-duo-greenDark">0 dias</div>
+              <div class="text-[11px] font-bold text-duo-muted uppercase mt-0.5">Dias praticados</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calendar + Manual Time Logger Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Monthly Practice Calendar -->
+        <div class="lg:col-span-2 rounded-3xl border-2 border-duo-border bg-white p-5 sm:p-6">
+          <div class="flex items-center justify-between mb-5">
+            <h3 id="calendar-month-title" class="text-lg sm:text-xl font-extrabold text-duo-ink capitalize"></h3>
+            <div class="flex items-center gap-2">
+              <button onclick="changeCalendarMonth(-1)" class="btn-3d btn-neutral px-3 py-1.5 rounded-xl font-extrabold text-sm">‹</button>
+              <button onclick="resetCalendarToToday()" class="btn-3d btn-neutral px-3 py-1.5 rounded-xl font-bold text-xs">Hoje</button>
+              <button onclick="changeCalendarMonth(1)" class="btn-3d btn-neutral px-3 py-1.5 rounded-xl font-extrabold text-sm">›</button>
+            </div>
+          </div>
+
+          <!-- Weekday Headers -->
+          <div class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center text-[11px] font-extrabold text-duo-muted uppercase mb-2">
+            <div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div><div>Dom</div>
+          </div>
+
+          <!-- Calendar Days Grid -->
+          <div id="calendar-days-grid" class="grid grid-cols-7 gap-1.5 sm:gap-2"></div>
+
+          <!-- Selected Day Detail Box -->
+          <div id="calendar-day-detail" class="mt-5 p-4 rounded-2xl bg-duo-surface border border-duo-border text-sm text-duo-ink"></div>
+        </div>
+
+        <!-- Log Practice Time Card -->
+        <div class="rounded-3xl border-2 border-duo-border bg-white p-5 sm:p-6 flex flex-col justify-between space-y-5">
+          <div class="space-y-4">
+            <h3 class="text-lg font-extrabold text-duo-ink">Registar Tempo de Prática</h3>
+            <p class="text-xs sm:text-sm text-duo-muted leading-relaxed">
+              O tempo passado na app conta automaticamente, mas também podes registar aqui minutos adicionais de prática offline, pesquisa de vídeos ou treino ao espelho.
+            </p>
+
+            <div>
+              <label class="block text-xs font-extrabold uppercase text-duo-muted mb-1.5">Data</label>
+              <input id="log-date-input" type="date" class="w-full px-3.5 py-2.5 rounded-2xl border-2 border-duo-border text-sm font-bold focus:outline-none focus:border-duo-blue" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-extrabold uppercase text-duo-muted mb-1.5">Minutos praticados</label>
+              <div class="grid grid-cols-4 gap-2 mb-2">
+                <button type="button" onclick="setQuickMinutes(5)" class="py-2 rounded-xl border-2 border-duo-border font-extrabold text-xs hover:border-duo-green hover:bg-duo-greenLight/40">+5m</button>
+                <button type="button" onclick="setQuickMinutes(10)" class="py-2 rounded-xl border-2 border-duo-border font-extrabold text-xs hover:border-duo-green hover:bg-duo-greenLight/40">+10m</button>
+                <button type="button" onclick="setQuickMinutes(15)" class="py-2 rounded-xl border-2 border-duo-border font-extrabold text-xs hover:border-duo-green hover:bg-duo-greenLight/40">+15m</button>
+                <button type="button" onclick="setQuickMinutes(30)" class="py-2 rounded-xl border-2 border-duo-border font-extrabold text-xs hover:border-duo-green hover:bg-duo-greenLight/40">+30m</button>
+              </div>
+              <input id="log-minutes-input" type="number" min="1" max="600" value="15" class="w-full px-3.5 py-2.5 rounded-2xl border-2 border-duo-border text-sm font-bold focus:outline-none focus:border-duo-blue" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-extrabold uppercase text-duo-muted mb-1.5">Nota (opcional)</label>
+              <input id="log-note-input" type="text" placeholder="Ex.: Treinei cumprimentos e números 1–20" class="w-full px-3.5 py-2.5 rounded-2xl border-2 border-duo-border text-sm font-medium focus:outline-none focus:border-duo-blue" />
+            </div>
+          </div>
+
+          <button onclick="handleManualTimeLog()" class="btn-3d btn-green w-full py-3 rounded-2xl font-extrabold text-sm">
+            🔥 Guardar Prática no Calendário
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== MODAL: ADD NEW UNIT / LEVEL (A2–C2) ==================== -->
+  <div id="new-unit-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border-2 border-duo-border max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-xl">
+      <div class="flex items-center justify-between border-b border-duo-border pb-3">
+        <h3 class="text-xl font-extrabold text-duo-ink">Adicionar Nova Unidade / Nível (A2–C2)</h3>
+        <button onclick="closeNewUnitModal()" class="w-9 h-9 rounded-full bg-duo-surface hover:bg-duo-border font-extrabold text-duo-muted">✕</button>
+      </div>
+
+      <p class="text-xs sm:text-sm text-duo-muted">
+        Quando terminares a Unidade 1 (A1), cria aqui as próximas unidades para evoluir até à fluência. Podes adicionar palavras (uma por linha no formato <code>GLOSA | Significado | Nota facial/gramática</code>) e frases (uma por linha no formato <code>Frase em Inglês/PT | GLOSA_1 + GLOSA_2 | Tradução PT</code>).
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-extrabold uppercase text-duo-muted mb-1">Nível QECR</label>
+          <select id="new-unit-level" class="w-full px-3.5 py-2.5 rounded-2xl border-2 border-duo-border font-bold text-sm">
+            <option value="A2">A2 — Elementar</option>
+            <option value="B1">B1 — Intermédio</option>
+            <option value="B2">B2 — Intermédio Avançado</option>
+            <option value="C1">C1 — Avançado</option>
+            <option value="C2">C2 — Fluência / Proficiência</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-extrabold uppercase text-duo-muted mb-1">Título da Unidade</label>
+          <input id="new-unit-title" type="text" placeholder="Ex.: Unidade 2 — Experiências e Tempo" class="w-full px-3.5 py-2.5 rounded-2xl border-2 border-duo-border font-bold text-sm" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-extrabold uppercase text-duo-muted mb-1">Nome do Bloco Inicial</label>
+        <input id="new-block-title" type="text" placeholder="Ex.: Bloco 1 — Viagens, Direções e Opiniões" class="w-full px-3.5 py-2.5 rounded-2xl border-2 border-duo-border font-bold text-sm" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-extrabold uppercase text-duo-muted mb-1">Palavras / Sinais (1 por linha: GLOSA | Significado | Nota)</label>
+        <textarea id="new-block-words" rows="4" placeholder="TRAVEL | Viajar | Movimento direcional&#10;TRAIN-STATION | Estação de comboios | Soletrar ou sinal composto&#10;BECAUSE | Porque | Expressão de explicação" class="w-full px-3.5 py-2.5 rounded-2xl border-2 border-duo-border text-xs sm:text-sm font-mono focus:outline-none focus:border-duo-blue"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-extrabold uppercase text-duo-muted mb-1">Frases Completas (1 por linha: Frase | Glosas | Tradução PT)</label>
+        <textarea id="new-block-sentences" rows="3" placeholder="Where is the train station? | TRAIN-STATION WHERE? | Onde fica a estação de comboios? (sobrancelhas franzidas)" class="w-full px-3.5 py-2.5 rounded-2xl border-2 border-duo-border text-xs sm:text-sm font-mono focus:outline-none focus:border-duo-blue"></textarea>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button onclick="closeNewUnitModal()" class="btn-3d btn-neutral px-4 py-2.5 rounded-2xl font-bold text-sm">Cancelar</button>
+        <button onclick="createCustomUnit()" class="btn-3d btn-green px-5 py-2.5 rounded-2xl font-extrabold text-sm">Criar Unidade</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. STATE & INITIAL A1 CURRICULUM DATA (UNIT 1 — 5 BLOCKS)
+    // =========================================================================
+    const STORAGE_KEY = 'bsl_quest_v1_state';
+
+    function createInitialCurriculum() {
+      const makeWord = (id, gloss, meaning, note = 'Mão dominante clara + expressão facial natural') => ({
+        id,
+        type: 'word',
+        gloss,
+        meaning,
+        note,
+        videoUrl: '',
+        mastered: false,
+      });
+
+      const makeSentence = (id, text, glossSequence, translationPt, note = 'Ordem BSL + expressão facial contínua') => ({
+        id,
+        type: 'sentence',
+        text,
+        glossSequence,
+        translationPt,
+        note,
+        videoUrl: '',
+        mastered: false,
+      });
+
+      return [
+        {
+          id: 'unit-1',
+          level: 'A1',
+          title: 'Unidade 1 — Fundamentos BSL (Nível A1 Completo)',
+          description: 'Programa completo de iniciante dividido em 5 blocos temáticos: cumprimentos, identidade/família, números/tempo, rotina e pedidos básicos.',
+          blocks: [
+            {
+              id: 'u1-b1',
+              title: 'Bloco 1: Cumprimentos, Apresentações e Alfabeto Manual',
+              summary: 'Saudações essenciais, cortesia, perguntar e dizer o nome e soletração manual (A–Z).',
+              words: [
+                makeWord('w-101', 'HELLO', 'Olá', 'Aceno aberto com expressão acolhedora'),
+                makeWord('w-102', 'GOOD-MORNING', 'Bom dia', 'Sinal composto de manhã + bom/bem'),
+                makeWord('w-103', 'GOOD-AFTERNOON', 'Boa tarde', 'Sinal composto de tarde + bom/bem'),
+                makeWord('w-104', 'GOODBYE', 'Adeus', 'Despedida com aceno simples'),
+                makeWord('w-105', 'PLEASE', 'Por favor', 'Mão plana a esfregar circularmente no peito'),
+                makeWord('w-106', 'THANK-YOU', 'Obrigado / Obrigada', 'Mão a partir do queixo/boca para a frente'),
+                makeWord('w-107', 'SORRY', 'Desculpa', 'Mão fechada em movimento circular no peito'),
+                makeWord('w-108', 'YES', 'Sim', 'Cabeça a acenar + mão em movimento de assentimento'),
+                makeWord('w-109', 'NO', 'Não', 'Indicador e médio a fechar sobre o polegar + abanar cabeça'),
+                makeWord('w-110', 'MY', 'Meu / Minha', 'Mão plana aberta sobre o próprio peito'),
+                makeWord('w-111', 'YOUR', 'Teu / Tua / Seu', 'Mão plana a apontar para a pessoa'),
+                makeWord('w-112', 'NAME', 'Nome', 'Dois dedos estendidos a tocar na testa e afastar'),
+                makeWord('w-113', 'WHAT', 'O quê / Qual', 'Pergunta WH — sobrancelhas franzidas'),
+                makeWord('w-114', 'HOW-ARE-YOU', 'Como estás?', 'Expressão curiosa/amigável com olhar atento'),
+              ],
+              sentences: [
+                makeSentence('s-101', 'Hello, how are you?', ['HELLO', 'HOW-ARE-YOU'], 'Olá, como estás?', 'Saudação + pergunta de estado'),
+                makeSentence('s-102', 'I am fine, thank you.', ['GOOD', 'THANK-YOU'], 'Estou bem, obrigado/a.', 'Resposta positiva + agradecimento'),
+                makeSentence('s-103', 'What is your name?', ['YOUR', 'NAME', 'WHAT'], 'Qual é o teu nome?', 'Sobrancelhas franzidas em WHAT'),
+                makeSentence('s-104', 'My name is [soletrar].', ['MY', 'NAME', 'FINGERSPELLING'], 'O meu nome é [nome soletreado].', 'Usa o alfabeto manual BSL (A–Z)'),
+                makeSentence('s-105', 'Nice to meet you.', ['NICE', 'MEET-YOU'], 'Prazer em conhecer-te.', 'Sinal direcional para o interlocutor'),
+              ],
+            },
+            {
+              id: 'u1-b2',
+              title: 'Bloco 2: Identidade, Família e Pessoas',
+              summary: 'Falar sobre ser surdo ou ouvinte, aprender BSL, onde morar e membros da família.',
+              words: [
+                makeWord('w-201', 'DEAF', 'Surdo / Surda', 'Indicador da orelha para o queixo/boca'),
+                makeWord('w-202', 'HEARING', 'Ouvinte', 'Movimento circular junto ao ouvido'),
+                makeWord('w-203', 'LEARN', 'Aprender', 'Mão a apanhar da palma não dominante para a testa'),
+                makeWord('w-204', 'BSL', 'Língua Gestual Britânica', 'Soletração / sinal de referência à BSL'),
+                makeWord('w-205', 'LIVE', 'Viver / Morar', 'Mãos a subir suavemente junto ao tronco'),
+                makeWord('w-206', 'WHERE', 'Onde', 'Pergunta WH — sobrancelhas franzidas'),
+                makeWord('w-207', 'FAMILY', 'Família', 'Sinal que reúne os membros num gesto abrangente'),
+                makeWord('w-208', 'MOTHER', 'Mãe', 'Posição superior/feminina junto à face'),
+                makeWord('w-209', 'FATHER', 'Pai', 'Posição superior/masculina junto à testa/face'),
+                makeWord('w-210', 'BROTHER', 'Irmão', 'Sinal de irmão em BSL'),
+                makeWord('w-211', 'SISTER', 'Irmã', 'Sinal de irmã em BSL'),
+                makeWord('w-212', 'FRIEND', 'Amigo / Amiga', 'Mãos entrelaçadas/ligadas junto ao peito'),
+                makeWord('w-213', 'HAVE', 'Ter / Possuir', 'Mãos a tocar levemente no peito'),
+                makeWord('w-214', 'WHO', 'Quem', 'Pergunta WH — sobrancelhas franzidas'),
+              ],
+              sentences: [
+                makeSentence('s-201', 'I am hearing and I am learning BSL.', ['ME', 'HEARING', 'LEARN', 'BSL'], 'Sou ouvinte e estou a aprender BSL.', 'Apresentação do teu percurso em BSL'),
+                makeSentence('s-202', 'Are you deaf?', ['YOU', 'DEAF'], 'És surdo/a?', 'Pergunta Sim/Não — sobrancelhas levantadas'),
+                makeSentence('s-203', 'Where do you live?', ['YOU', 'LIVE', 'WHERE'], 'Onde vives?', 'WHERE no final com sobrancelhas franzidas'),
+                makeSentence('s-204', 'I live in [cidade/país].', ['ME', 'LIVE', 'PLACE'], 'Eu vivo em [local].', 'Tópico/sujeito + local'),
+                makeSentence('s-205', 'Do you have brothers or sisters?', ['YOU', 'HAVE', 'BROTHER', 'SISTER'], 'Tens irmãos ou irmãs?', 'Sobrancelhas levantadas em pergunta polar'),
+              ],
+            },
+            {
+              id: 'u1-b3',
+              title: 'Bloco 3: Números, Idade, Tempo e Horas',
+              summary: 'Números 1–20, idade, horas, dias da semana, momentos do dia e aniversário.',
+              words: [
+                makeWord('w-301', 'NUMBERS 1–20', 'Números de 1 a 20', 'Atenção especial à transição 1–10 e 11–20 em BSL'),
+                makeWord('w-302', 'AGE / HOW-OLD', 'Idade / Quantos anos', 'Referência de idade em BSL'),
+                makeWord('w-303', 'TIME', 'Horas / Tempo', 'Apontar para o pulso onde se usa relógio'),
+                makeWord('w-304', 'TODAY', 'Hoje', 'Movimento duplo para baixo no espaço presente'),
+                makeWord('w-305', 'TOMORROW', 'Amanhã', 'Movimento para a frente (futuro próximo)'),
+                makeWord('w-306', 'YESTERDAY', 'Ontem', 'Movimento para trás junto à face (passado)'),
+                makeWord('w-307', 'NOW', 'Agora', 'Mãos a descer rapidamente à frente do corpo'),
+                makeWord('w-308', 'MORNING', 'Manhã', 'Braço a subir como o sol da manhã'),
+                makeWord('w-309', 'AFTERNOON', 'Tarde', 'Posição intermédia do arco solar'),
+                makeWord('w-310', 'NIGHT', 'Noite', 'Mão a fechar/descer sobre a outra mão'),
+                makeWord('w-311', 'MONDAY–SUNDAY', 'Dias da semana', 'Sinais dos 7 dias da semana em BSL'),
+                makeWord('w-312', 'WHEN', 'Quando', 'Pergunta WH — sobrancelhas franzidas'),
+                makeWord('w-313', 'BIRTHDAY', 'Aniversário', 'Sinal associado a nascimento/aniversário'),
+              ],
+              sentences: [
+                makeSentence('s-301', 'How old are you?', ['YOU', 'AGE', 'WHAT'], 'Quantos anos tens?', 'Sobrancelhas franzidas na pergunta'),
+                makeSentence('s-302', 'I am [X] years old.', ['ME', 'AGE', 'NUMBER'], 'Tenho [X] anos.', 'Indica o número com clareza'),
+                makeSentence('s-303', 'What time is it?', ['TIME', 'WHAT'], 'Que horas são?', 'Aponta para o pulso + WHAT'),
+                makeSentence('s-304', 'When is your birthday?', ['YOUR', 'BIRTHDAY', 'WHEN'], 'Quando é o teu aniversário?', 'WHEN no fim com sobrancelhas franzidas'),
+              ],
+            },
+            {
+              id: 'u1-b4',
+              title: 'Bloco 4: Rotina Diária, Casa e Transportes',
+              summary: 'Casa, trabalho, escola, ações diárias, transportes e expressar gostos e preferências.',
+              words: [
+                makeWord('w-401', 'HOME / HOUSE', 'Casa', 'Contorno do telhado e paredes'),
+                makeWord('w-402', 'WORK', 'Trabalhar / Trabalho', 'Pulsos/mãos em movimento rítmico'),
+                makeWord('w-403', 'SCHOOL / UNIVERSITY', 'Escola / Universidade', 'Movimento de bater palmas/estudo'),
+                makeWord('w-404', 'EAT', 'Comer', 'Mão em direção à boca'),
+                makeWord('w-405', 'DRINK', 'Beber', 'Gesto de levar copo à boca'),
+                makeWord('w-406', 'SLEEP', 'Dormir', 'Mão a fechar junto ao rosto/olhos'),
+                makeWord('w-407', 'GO', 'Ir', 'Deslocamento direcional para a frente'),
+                makeWord('w-408', 'COME', 'Vir', 'Deslocamento direcional na direção do sinalizante'),
+                makeWord('w-409', 'CAR', 'Carro', 'Gesto de segurar e rodar um volante'),
+                makeWord('w-410', 'BUS', 'Autocarro', 'Movimento de condução de veículo grande'),
+                makeWord('w-411', 'TRAIN', 'Comboio', 'Movimento rítmico sobre carris'),
+                makeWord('w-412', 'WALK', 'Andar a pé', 'Dois dedos a caminhar sobre a palma ou no ar'),
+                makeWord('w-413', 'LIKE', 'Gostar', 'Mão a afastar suavemente do peito com expressão positiva'),
+                makeWord('w-414', 'DON\'T-LIKE', 'Não gostar', 'Expressão facial de desagrado + negação com a cabeça'),
+              ],
+              sentences: [
+                makeSentence('s-401', 'Where do you work?', ['YOU', 'WORK', 'WHERE'], 'Onde trabalhas?', 'Sobrancelhas franzidas em WHERE'),
+                makeSentence('s-402', 'I go to work by bus.', ['ME', 'WORK', 'GO', 'BUS'], 'Vou para o trabalho de autocarro.', 'Marcadores temporais/locais claros'),
+                makeSentence('s-403', 'What do you like doing?', ['YOU', 'LIKE', 'DO', 'WHAT'], 'O que gostas de fazer?', 'Pergunta aberta com sobrancelhas franzidas'),
+                makeSentence('s-404', 'I like coffee, I don\'t like tea.', ['COFFEE', 'ME', 'LIKE', 'TEA', 'DON\'T-LIKE'], 'Gosto de café, não gosto de chá.', 'Contraste com expressão facial clara'),
+                makeSentence('s-405', 'Tomorrow I am going home.', ['TOMORROW', 'ME', 'HOME', 'GO'], 'Amanhã vou para casa.', 'Referência temporal no início da frase'),
+              ],
+            },
+            {
+              id: 'u1-b5',
+              title: 'Bloco 5: Comida, Compras e Pedidos Simples',
+              summary: 'Pedir comida e bebida, pedir ajuda e gerir a comunicação quando não percebes algo.',
+              words: [
+                makeWord('w-501', 'FOOD', 'Comida', 'Sinal de alimento/comer'),
+                makeWord('w-502', 'WATER', 'Água', 'Configuração de mão específica para água em BSL'),
+                makeWord('w-503', 'COFFEE', 'Café', 'Movimento de moer/preparar café'),
+                makeWord('w-504', 'TEA', 'Chá', 'Gesto de infusão/servir chá'),
+                makeWord('w-505', 'MILK', 'Leite', 'Movimento de ordenha'),
+                makeWord('w-506', 'BREAD', 'Pão', 'Mão a fatiar sobre a outra mão'),
+                makeWord('w-507', 'WANT', 'Querer', 'Mãos a puxar suavemente para si'),
+                makeWord('w-508', 'NEED', 'Precisar', 'Movimento firme para baixo'),
+                makeWord('w-509', 'HELP', 'Ajudar', 'Mão de apoio a elevar a mão dominante'),
+                makeWord('w-510', 'UNDERSTAND', 'Perceber / Compreender', 'Indicador a subir junto à testa'),
+                makeWord('w-511', 'DON\'T-UNDERSTAND', 'Não perceber', 'Expressão de dúvida + negação facial'),
+                makeWord('w-512', 'AGAIN / REPEAT', 'Outra vez / Repetir', 'Mão dominante a rodar/voltar sobre a outra'),
+                makeWord('w-513', 'SLOW', 'Devagar', 'Mão a deslizar lentamente sobre a outra'),
+              ],
+              sentences: [
+                makeSentence('s-501', 'I don\'t understand, please sign slowly.', ['ME', 'DON\'T-UNDERSTAND', 'PLEASE', 'SIGN', 'SLOW'], 'Não percebo, por favor sinalize devagar.', 'Frase essencial para conversas reais'),
+                makeSentence('s-502', 'Please repeat that.', ['PLEASE', 'AGAIN'], 'Por favor repita.', 'Pedido direto e educado'),
+                makeSentence('s-503', 'What do you want to drink?', ['YOU', 'WANT', 'DRINK', 'WHAT'], 'O que queres beber?', 'Sobrancelhas franzidas em WHAT'),
+                makeSentence('s-504', 'I would like water, please.', ['WATER', 'ME', 'WANT', 'PLEASE'], 'Queria água, por favor.', 'Tópico/item + pedido'),
+                makeSentence('s-505', 'Can you help me?', ['YOU', 'HELP', 'ME'], 'Podes ajudar-me?', 'Direção do verbo para ME + sobrancelhas levantadas'),
+              ],
+            },
+          ],
+        },
+      ];
+    }
+
+    function getTodayKey() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          return {
+            units: createInitialCurriculum(),
+            practiceLog: {}, // { 'YYYY-MM-DD': { minutes: number, note: string } }
+            activeTab: 'trilha',
+            exerciseMode: 'learn',
+            calendarViewDate: new Date().toISOString().slice(0, 10),
+            selectedCalendarDate: getTodayKey(),
+          };
+        }
+        const parsed = JSON.parse(raw);
+        return {
+          units: Array.isArray(parsed.units) && parsed.units.length ? parsed.units : createInitialCurriculum(),
+          practiceLog: parsed.practiceLog || {},
+          activeTab: parsed.activeTab || 'trilha',
+          exerciseMode: parsed.exerciseMode || 'learn',
+          calendarViewDate: parsed.calendarViewDate || new Date().toISOString().slice(0, 10),
+          selectedCalendarDate: parsed.selectedCalendarDate || getTodayKey(),
+        };
+      } catch (err) {
+        console.error('Erro ao carregar estado:', err);
+        return {
+          units: createInitialCurriculum(),
+          practiceLog: {},
+          activeTab: 'trilha',
+          exerciseMode: 'learn',
+          calendarViewDate: new Date().toISOString().slice(0, 10),
+          selectedCalendarDate: getTodayKey(),
+        };
+      }
+    }
+
+    let state = loadState();
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (err) {
+        console.error('Erro ao guardar estado:', err);
+        showToast('Não foi possível guardar no navegador (limite de armazenamento).', 'error');
+      }
+    }
+
+    // =========================================================================
+    // 2. TOAST NOTIFICATIONS (NO alert() OR confirm())
+    // =========================================================================
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      const styles = {
+        success: 'bg-duo-green text-white border-duo-greenDark',
+        error: 'bg-duo-red text-white border-duo-redDark',
+        info: 'bg-duo-blue text-white border-duo-blueDark',
+      };
+      el.className = `pointer-events-auto px-4 py-3 rounded-2xl border-b-4 font-bold text-xs sm:text-sm shadow-lg transition-all ${styles[type] || styles.info}`;
+      el.textContent = message;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(8px)';
+        setTimeout(() => el.remove(), 220);
+      }, 3200);
+    }
+
+    // =========================================================================
+    // 3. AUTOMATIC PRACTICE TIME TRACKER & DUOLINGO STREAK ("FOGUINHO")
+    // =========================================================================
+    let sessionSeconds = 0;
+
+    function addPracticeMinutes(dateKey, minutesToAdd, noteText = '') {
+      if (!dateKey || minutesToAdd <= 0) return;
+      if (!state.practiceLog[dateKey]) {
+        state.practiceLog[dateKey] = { minutes: 0, note: '' };
+      }
+      state.practiceLog[dateKey].minutes = Math.round((state.practiceLog[dateKey].minutes + minutesToAdd) * 10) / 10;
+      if (noteText) {
+        const existingNote = state.practiceLog[dateKey].note;
+        state.practiceLog[dateKey].note = existingNote ? `${existingNote} • ${noteText}` : noteText;
+      }
+      saveState();
+      renderStreakAndStats();
+      if (state.activeTab === 'calendario') {
+        renderCalendar();
+      }
+    }
+
+    // Track 1 minute increments automatically while tab is visible
+    setInterval(() => {
+      if (document.hidden) return;
+      sessionSeconds += 1;
+
+      const mins = Math.floor(sessionSeconds / 60);
+      const secs = sessionSeconds % 60;
+      const timerText = document.getElementById('live-timer-text');
+      if (timerText) {
+        timerText.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+
+      if (sessionSeconds % 60 === 0) {
+        addPracticeMinutes(getTodayKey(), 1);
+      }
+    }, 1000);
+
+    function parseDateKeyLocal(dateKey) {
+      const [y, m, d] = dateKey.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function formatDateKeyLocal(dateObj) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const d = String(dateObj.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function computeStreak() {
+      const log = state.practiceLog || {};
+      const activeDates = new Set(
+        Object.entries(log)
+          .filter(([, entry]) => entry && Number(entry.minutes) > 0)
+          .map(([key]) => key)
+      );
+
+      if (activeDates.size === 0) {
+        return { streak: 0, practicedToday: false };
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayKey = formatDateKeyLocal(today);
+
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      const yesterdayKey = formatDateKeyLocal(yesterday);
+
+      const practicedToday = activeDates.has(todayKey);
+
+      // If neither today nor yesterday has practice, streak is 0
+      if (!practicedToday && !activeDates.has(yesterdayKey)) {
+        return { streak: 0, practicedToday: false };
+      }
+
+      let cursor = practicedToday ? new Date(today) : new Date(yesterday);
+      let streak = 0;
+
+      while (activeDates.has(formatDateKeyLocal(cursor))) {
+        streak += 1;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+
+      return { streak, practicedToday };
+    }
+
+    function renderStreakAndStats() {
+      const { streak, practicedToday } = computeStreak();
+      const streakEl = document.getElementById('header-streak-count');
+      const flameIcon = document.getElementById('header-flame-icon');
+      const calStreakEl = document.getElementById('cal-streak-days');
+      const calFlameBig = document.getElementById('cal-flame-big');
+      const calMsgEl = document.getElementById('cal-streak-message');
+
+      if (streakEl) streakEl.textContent = streak;
+      if (calStreakEl) calStreakEl.textContent = streak;
+
+      if (flameIcon) {
+        if (streak > 0 && practicedToday) {
+          flameIcon.classList.add('flame-active');
+          flameIcon.style.filter = 'none';
+        } else if (streak > 0) {
+          flameIcon.classList.remove('flame-active');
+          flameIcon.style.filter = 'none';
+        } else {
+          flameIcon.classList.remove('flame-active');
+          flameIcon.style.filter = 'grayscale(85%) opacity(0.65)';
+        }
+      }
+
+      if (calFlameBig) {
+        calFlameBig.style.filter = streak > 0 ? 'none' : 'grayscale(85%) opacity(0.6)';
+        if (streak > 0 && practicedToday) {
+          calFlameBig.classList.add('flame-active');
+        } else {
+          calFlameBig.classList.remove('flame-active');
+        }
+      }
+
+      if (calMsgEl) {
+        if (streak > 0 && practicedToday) {
+          calMsgEl.textContent = `Foguinho aceso hoje! Estás numa sequência de ${streak} ${streak === 1 ? 'dia' : 'dias'}.`;
+        } else if (streak > 0) {
+          calMsgEl.textContent = `Tens ${streak} ${streak === 1 ? 'dia' : 'dias'} acumulados — pratica hoje para manter a chama viva!`;
+        } else {
+          calMsgEl.textContent = 'Ainda não há prática registada. Completa um exercício ou regista tempo hoje para iniciar o teu foguinho!';
+        }
+      }
+
+      // Summary stats in Trilha
+      const allItems = getAllItems();
+      const videosReady = allItems.filter((it) => Boolean(it.videoUrl && it.videoUrl.trim())).length;
+      const masteredCount = allItems.filter((it) => Boolean(it.mastered)).length;
+      const todayMinutes = Math.round((state.practiceLog[getTodayKey()]?.minutes || 0));
+
+      const vidStat = document.getElementById('stat-videos-ready');
+      const masStat = document.getElementById('stat-mastered');
+      const minStat = document.getElementById('stat-minutes-today');
+
+      if (vidStat) vidStat.textContent = `${videosReady}/${allItems.length}`;
+      if (masStat) masStat.textContent = `${masteredCount}`;
+      if (minStat) minStat.textContent = `${todayMinutes}m`;
+
+      // Calendar totals
+      const entries = Object.values(state.practiceLog || {});
+      const totalMins = Math.round(entries.reduce((acc, e) => acc + (Number(e?.minutes) || 0), 0));
+      const activeDaysCount = entries.filter((e) => (Number(e?.minutes) || 0) > 0).length;
+
+      const totalMinEl = document.getElementById('cal-total-minutes');
+      const activeDaysEl = document.getElementById('cal-active-days');
+      if (totalMinEl) totalMinEl.textContent = `${totalMins} min`;
+      if (activeDaysEl) activeDaysEl.textContent = `${activeDaysCount} ${activeDaysCount === 1 ? 'dia' : 'dias'}`;
+    }
+
+    // =========================================================================
+    // 4. VIDEO URL PARSER & EMBED RENDERER (YouTube with timestamps + MP4/WebM)
+    // =========================================================================
+    function parseTimestampToSeconds(val) {
+      if (!val) return 0;
+      const str = String(val).trim();
+      if (/^\d+$/.test(str)) return parseInt(str, 10);
+      // Supports e.g. 1h2m3s or 1m30s or 45s
+      let total = 0;
+      const h = str.match(/(\d+)h/i);
+      const m = str.match(/(\d+)m/i);
+      const s = str.match(/(\d+)s/i);
+      if (h) total += parseInt(h[1], 10) * 3600;
+      if (m) total += parseInt(m[1], 10) * 60;
+      if (s) total += parseInt(s[1], 10);
+      return total;
+    }
+
+    function extractYouTubeEmbed(rawUrl) {
+      try {
+        const url = new URL(rawUrl.trim());
+        let videoId = '';
+        let startSec = 0;
+
+        if (url.hostname.includes('youtu.be')) {
+          videoId = url.pathname.replace('/', '').split('/')[0];
+          startSec = parseTimestampToSeconds(url.searchParams.get('t') || url.searchParams.get('start') || '0');
+        } else if (url.hostname.includes('youtube.com')) {
+          if (url.pathname.startsWith('/shorts/')) {
+            videoId = url.pathname.split('/shorts/')[1].split('/')[0];
+          } else if (url.pathname.startsWith('/embed/')) {
+            videoId = url.pathname.split('/embed/')[1].split('/')[0];
+          } else {
+            videoId = url.searchParams.get('v') || '';
+          }
+          startSec = parseTimestampToSeconds(url.searchParams.get('t') || url.searchParams.get('start') || '0');
+        }
+
+        if (!videoId) return null;
+        const startQuery = startSec > 0 ? `?start=${startSec}&rel=0` : '?rel=0';
+        return {
+          embedUrl: `https://www.youtube.com/embed/${videoId}${startQuery}`,
+          startSec,
+        };
+      } catch {
+        return null;
+      }
+    }
+
+    function renderVideoPlayerHTML(videoUrl, label = 'Sinal BSL') {
+      const trimmed = (videoUrl || '').trim();
+      if (!trimmed) {
+        return `
+          <div class="rounded-2xl border-2 border-dashed border-duo-border bg-duo-surface p-6 text-center space-y-2">
+            <div class="text-3xl">🎥</div>
+            <div class="text-sm font-extrabold text-duo-ink">Sem vídeo ligado ainda para "${escapeHtml(label)}"</div>
+            <p class="text-xs text-duo-muted max-w-md mx-auto">
+              Cola um link do YouTube (ex.: <code>https://youtu.be/...?t=12</code>) ou um link direto <code>.mp4</code> / <code>.webm</code> no <strong>Banco de Vídeos</strong> para ver o vídeo aqui.
+            </p>
+          </div>
+        `;
+      }
+
+      const yt = extractYouTubeEmbed(trimmed);
+      if (yt) {
+        return `
+          <div class="rounded-2xl overflow-hidden border-2 border-duo-border bg-black aspect-video w-full">
+            <iframe
+              src="${yt.embedUrl}"
+              title="${escapeHtml(label)}"
+              class="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="rounded-2xl overflow-hidden border-2 border-duo-border bg-black aspect-video w-full">
+          <video controls playsinline preload="metadata" class="w-full h-full object-contain bg-black" src="${escapeHtml(trimmed)}">
+            O teu navegador não suporta reprodução deste formato de vídeo.
+          </video>
+        </div>
+      `;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // =========================================================================
+    // 5. DATA HELPERS ACROSS UNITS & BLOCKS
+    // =========================================================================
+    function getAllItems(blockFilterId = 'ALL') {
+      const list = [];
+      for (const unit of state.units) {
+        for (const block of unit.blocks) {
+          if (blockFilterId !== 'ALL' && block.id !== blockFilterId) continue;
+          for (const w of block.words) {
+            list.push({
+              ...w,
+              unitId: unit.id,
+              unitLevel: unit.level,
+              unitTitle: unit.title,
+              blockId: block.id,
+              blockTitle: block.title,
+            });
+          }
+          for (const s of block.sentences) {
+            list.push({
+              ...s,
+              unitId: unit.id,
+              unitLevel: unit.level,
+              unitTitle: unit.title,
+              blockId: block.id,
+              blockTitle: block.title,
+            });
+          }
+        }
+      }
+      return list;
+    }
+
+    function findItemById(itemId) {
+      for (const unit of state.units) {
+        for (const block of unit.blocks) {
+          const w = block.words.find((x) => x.id === itemId);
+          if (w) return { item: w, unit, block };
+          const s = block.sentences.find((x) => x.id === itemId);
+          if (s) return { item: s, unit, block };
+        }
+      }
+      return null;
+    }
+
+    function toggleMastered(itemId) {
+      const found = findItemById(itemId);
+      if (!found) return;
+      found.item.mastered = !found.item.mastered;
+      saveState();
+      renderStreakAndStats();
+      renderUnits();
+      renderMediaBank();
+      if (found.item.mastered) {
+        addPracticeMinutes(getTodayKey(), 1, `Marcou "${found.item.gloss || found.item.text}" como dominado`);
+        showToast(`Marcado como dominado! 🔥`, 'success');
+      }
+    }
+
+    // =========================================================================
+    // 6. TAB NAVIGATION
+    // =========================================================================
+    function switchTab(tabName) {
+      state.activeTab = tabName;
+      saveState();
+
+      document.querySelectorAll('.tab-panel').forEach((sec) => {
+        sec.classList.toggle('hidden', sec.id !== `tab-${tabName}`);
+      });
+
+      document.querySelectorAll('.nav-btn').forEach((btn) => {
+        const isActive = btn.dataset.nav === tabName;
+        btn.classList.toggle('bg-duo-blueLight', isActive);
+        btn.classList.toggle('text-duo-blueDark', isActive);
+        btn.classList.toggle('text-duo-muted', !isActive);
+      });
+
+      if (tabName === 'trilha') renderUnits();
+      if (tabName === 'pratica') {
+        populateExerciseBlockSelect();
+        renderExerciseStage();
+      }
+      if (tabName === 'banco') {
+        populateBankUnitFilter();
+        renderMediaBank();
+      }
+      if (tabName === 'calendario') {
+        renderCalendar();
+      }
+      renderStreakAndStats();
+    }
+
+    // =========================================================================
+    // 7. RENDER TRILHA & ADD CUSTOM UNITS (A2–C2)
+    // =========================================================================
+    function renderUnits() {
+      const container = document.getElementById('units-container');
+      if (!container) return;
+
+      container.innerHTML = state.units
+        .map((unit) => {
+          const blocksHtml = unit.blocks
+            .map((block, idx) => {
+              const wordsReady = block.words.filter((w) => w.videoUrl && w.videoUrl.trim()).length;
+              const sentencesReady = block.sentences.filter((s) => s.videoUrl && s.videoUrl.trim()).length;
+              const masteredInBlock = [...block.words, ...block.sentences].filter((x) => x.mastered).length;
+              const totalInBlock = block.words.length + block.sentences.length;
+              const pct = totalInBlock ? Math.round((masteredInBlock / totalInBlock) * 100) : 0;
+
+              return `
+                <div class="rounded-3xl border-2 border-duo-border bg-white p-5 sm:p-6 hover:border-duo-blue/50 transition-colors space-y-4">
+                  <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                    <div>
+                      <div class="inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-duo-blueDark mb-1">
+                        <span>Bloco ${idx + 1}</span>
+                        <span>•</span>
+                        <span>${block.words.length} palavras + ${block.sentences.length} frases</span>
+                      </div>
+                      <h4 class="text-lg font-extrabold text-duo-ink">${escapeHtml(block.title)}</h4>
+                      <p class="text-xs sm:text-sm text-duo-muted mt-1">${escapeHtml(block.summary || '')}</p>
+                    </div>
+
+                    <div class="flex flex-wrap sm:flex-col items-start sm:items-end gap-1.5 shrink-0">
+                      <span class="text-xs font-extrabold px-2.5 py-1 rounded-full ${wordsReady + sentencesReady > 0 ? 'bg-duo-blueLight text-duo-blueDark' : 'bg-duo-surface text-duo-muted'}">
+                        🎬 ${wordsReady}/${block.words.length} sinais • ${sentencesReady}/${block.sentences.length} frases
+                      </span>
+                      <span class="text-xs font-bold text-duo-greenDark">${pct}% dominado</span>
+                    </div>
+                  </div>
+
+                  <!-- Progress Bar -->
+                  <div class="w-full h-3 rounded-full bg-duo-surface overflow-hidden border border-duo-border">
+                    <div class="h-full bg-duo-green transition-all duration-300" style="width: ${pct}%"></div>
+                  </div>
+
+                  <!-- Words Preview Chips -->
+                  <div>
+                    <div class="text-[11px] font-extrabold uppercase tracking-wider text-duo-muted mb-2">Sinais / Palavras</div>
+                    <div class="flex flex-wrap gap-1.5">
+                      ${block.words
+                        .map((w) => {
+                          const hasVid = Boolean(w.videoUrl && w.videoUrl.trim());
+                          const badgeClass = w.mastered
+                            ? 'bg-duo-greenLight border-duo-green text-duo-greenDark'
+                            : hasVid
+                            ? 'bg-duo-blueLight/70 border-duo-blue/40 text-duo-ink'
+                            : 'bg-duo-surface border-duo-border text-duo-ink';
+                          return `
+                            <button onclick="openItemInBank('${w.id}')" class="px-2.5 py-1 rounded-xl border text-xs font-bold transition-transform hover:scale-[1.02] ${badgeClass}" title="${escapeHtml(w.meaning)} — clica para gerir vídeo">
+                              ${w.mastered ? '✓ ' : ''}${escapeHtml(w.gloss)} <span class="font-normal text-duo-muted">(${escapeHtml(w.meaning)})</span>${hasVid ? ' 🎬' : ''}
+                            </button>
+                          `;
+                        })
+                        .join('')}
+                    </div>
+                  </div>
+
+                  <!-- Sentences Preview List -->
+                  <div>
+                    <div class="text-[11px] font-extrabold uppercase tracking-wider text-duo-muted mb-2">Frases Completas do Bloco</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      ${block.sentences
+                        .map((s) => {
+                          const hasVid = Boolean(s.videoUrl && s.videoUrl.trim());
+                          return `
+                            <button onclick="openItemInBank('${s.id}')" class="text-left p-3 rounded-2xl border ${s.mastered ? 'border-duo-green bg-duo-greenLight/30' : 'border-duo-border bg-duo-surface/60 hover:bg-duo-surface'} transition-colors flex items-start justify-between gap-2">
+                              <div>
+                                <div class="text-xs sm:text-sm font-extrabold text-duo-ink">${escapeHtml(s.text)}</div>
+                                <div class="text-[11px] font-mono text-duo-blueDark mt-0.5">${escapeHtml((s.glossSequence || []).join(' + '))}</div>
+                                <div class="text-xs text-duo-muted mt-0.5">${escapeHtml(s.translationPt)}</div>
+                              </div>
+                              <span class="text-sm shrink-0">${s.mastered ? '✅' : hasVid ? '🎬' : '➕'}</span>
+                            </button>
+                          `;
+                        })
+                        .join('')}
+                    </div>
+                  </div>
+
+                  <!-- Block Action Buttons -->
+                  <div class="pt-2 flex flex-wrap items-center gap-2.5">
+                    <button onclick="startBlockPractice('${block.id}', 'learn')" class="btn-3d btn-green px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm">
+                      📖 Estudar Bloco
+                    </button>
+                    <button onclick="startBlockPractice('${block.id}', 'recognize')" class="btn-3d btn-blue px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm">
+                      👀 Reconhecer Sinais
+                    </button>
+                    <button onclick="startBlockPractice('${block.id}', 'sentence')" class="btn-3d btn-orange px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm">
+                      🧩 Montar Frases
+                    </button>
+                  </div>
+                </div>
+              `;
+            })
+            .join('');
+
+          return `
+            <div class="space-y-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-duo-border pb-3">
+                <div>
+                  <span class="inline-block px-2.5 py-0.5 rounded-lg bg-duo-purple/15 text-duo-purpleDark font-extrabold text-xs mr-2">
+                    NÍVEL ${escapeHtml(unit.level)}
+                  </span>
+                  <h3 class="inline text-xl sm:text-2xl font-extrabold text-duo-ink">${escapeHtml(unit.title)}</h3>
+                  <p class="text-xs sm:text-sm text-duo-muted mt-1">${escapeHtml(unit.description || '')}</p>
+                </div>
+              </div>
+              <div class="space-y-4">${blocksHtml}</div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function openNewUnitModal() {
+      document.getElementById('new-unit-modal').classList.remove('hidden');
+    }
+
+    function closeNewUnitModal() {
+      document.getElementById('new-unit-modal').classList.add('hidden');
+    }
+
+    function createCustomUnit() {
+      const level = document.getElementById('new-unit-level').value;
+      const unitTitle = document.getElementById('new-unit-title').value.trim();
+      const blockTitle = document.getElementById('new-block-title').value.trim();
+      const wordsRaw = document.getElementById('new-block-words').value.trim();
+      const sentencesRaw = document.getElementById('new-block-sentences').value.trim();
+
+      if (!unitTitle || !blockTitle) {
+        showToast('Preenche o título da unidade e o nome do bloco.', 'error');
+        return;
+      }
+
+      const uid = `unit-${Date.now()}`;
+      const bid = `block-${Date.now()}`;
+
+      const words = wordsRaw
+        ? wordsRaw
+            .split('\n')
+            .map((line) => line.trim())
+            .filter(Boolean)
+            .map((line, idx) => {
+              const parts = line.split('|').map((p) => p.trim());
+              return {
+                id: `${bid}-w-${idx}-${Date.now()}`,
+                type: 'word',
+                gloss: (parts[0] || `SINAL-${idx + 1}`).toUpperCase(),
+                meaning: parts[1] || 'Significado por definir',
+                note: parts[2] || 'Observa expressão facial e posição das mãos',
+                videoUrl: '',
+                mastered: false,
+              };
+            })
+        : [];
+
+      const sentences = sentencesRaw
+        ? sentencesRaw
+            .split('\n')
+            .map((line) => line.trim())
+            .filter(Boolean)
+            .map((line, idx) => {
+              const parts = line.split('|').map((p) => p.trim());
+              const glossSeq = (parts[1] || '')
+                .split(/\s*\+\s*|\s*,\s*/)
+                .map((g) => g.trim())
+                .filter(Boolean);
+              return {
+                id: `${bid}-s-${idx}-${Date.now()}`,
+                type: 'sentence',
+                text: parts[0] || `Frase ${idx + 1}`,
+                glossSequence: glossSeq.length ? glossSeq : ['BSL', 'SENTENCE'],
+                translationPt: parts[2] || parts[0] || 'Tradução',
+                note: 'Estrutura BSL + expressão facial',
+                videoUrl: '',
+                mastered: false,
+              };
+            })
+        : [];
+
+      if (words.length === 0 && sentences.length === 0) {
+        showToast('Adiciona pelo menos uma palavra ou uma frase ao bloco.', 'error');
+        return;
+      }
+
+      state.units.push({
+        id: uid,
+        level,
+        title: unitTitle,
+        description: `Unidade personalizada de nível ${level} adicionada por ti.`,
+        blocks: [
+          {
+            id: bid,
+            title: blockTitle,
+            summary: `Bloco criado para nível ${level}.`,
+            words,
+            sentences,
+          },
+        ],
+      });
+
+      saveState();
+      closeNewUnitModal();
+      document.getElementById('new-unit-title').value = '';
+      document.getElementById('new-block-title').value = '';
+      document.getElementById('new-block-words').value = '';
+      document.getElementById('new-block-sentences').value = '';
+      renderUnits();
+      renderStreakAndStats();
+      showToast(`Unidade ${level} criada com sucesso!`, 'success');
+    }
+
+    // =========================================================================
+    // 8. MEDIA BANK (ADD / UPDATE YOUTUBE & MP4/WEBM LINKS)
+    // =========================================================================
+    let highlightedItemId = null;
+
+    function openItemInBank(itemId) {
+      highlightedItemId = itemId;
+      switchTab('banco');
+      setTimeout(() => {
+        const el = document.getElementById(`bank-row-${itemId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 120);
+    }
+
+    function populateBankUnitFilter() {
+      const select = document.getElementById('bank-unit-filter');
+      if (!select) return;
+      const current = select.value;
+      select.innerHTML = `<option value="ALL">Todas as Unidades</option>` +
+        state.units
+          .map((u) => `<option value="${u.id}">${escapeHtml(u.level)} — ${escapeHtml(u.title)}</option>`)
+          .join('');
+      if ([...select.options].some((o) => o.value === current)) {
+        select.value = current;
+      }
+    }
+
+    function renderMediaBank() {
+      const listEl = document.getElementById('media-bank-list');
+      if (!listEl) return;
+
+      const q = (document.getElementById('bank-search')?.value || '').toLowerCase().trim();
+      const unitFilter = document.getElementById('bank-unit-filter')?.value || 'ALL';
+      const typeFilter = document.getElementById('bank-type-filter')?.value || 'ALL';
+      const statusFilter = document.getElementById('bank-status-filter')?.value || 'ALL';
+
+      const all = getAllItems().filter((item) => {
+        if (unitFilter !== 'ALL' && item.unitId !== unitFilter) return false;
+        if (typeFilter !== 'ALL' && item.type !== typeFilter) return false;
+
+        const hasVideo = Boolean(item.videoUrl && item.videoUrl.trim());
+        if (statusFilter === 'missing' && hasVideo) return false;
+        if (statusFilter === 'linked' && !hasVideo) return false;
+        if (statusFilter === 'mastered' && !item.mastered) return false;
+
+        if (q) {
+          const hay = [
+            item.gloss || '',
+            item.meaning || '',
+            item.text || '',
+            item.translationPt || '',
+            (item.glossSequence || []).join(' '),
+            item.blockTitle || '',
+          ]
+            .join(' ')
+            .toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if (all.length === 0) {
+        listEl.innerHTML = `
+          <div class="rounded-3xl border-2 border-dashed border-duo-border p-8 text-center text-duo-muted text-sm font-semibold">
+            Nenhum sinal ou frase corresponde aos filtros atuais.
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = all
+        .map((item) => {
+          const isWord = item.type === 'word';
+          const titleText = isWord ? `${item.gloss} — ${item.meaning}` : item.text;
+          const subtitleText = isWord
+            ? `${item.note || ''}`
+            : `Glosas: ${(item.glossSequence || []).join(' + ')} • Tradução: ${item.translationPt}`;
+          const hasVid = Boolean(item.videoUrl && item.videoUrl.trim());
+          const isHighlighted = highlightedItemId === item.id;
+
+          return `
+            <div id="bank-row-${item.id}" class="rounded-3xl border-2 ${isHighlighted ? 'border-duo-blue bg-duo-blueLight/20' : 'border-duo-border bg-white'} p-4 sm:p-5 space-y-3 transition-colors">
+              <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                <div>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2 py-0.5 rounded-lg text-[11px] font-extrabold uppercase ${isWord ? 'bg-duo-blueLight text-duo-blueDark' : 'bg-duo-orangeLight text-duo-orangeDark'}">
+                      ${isWord ? 'Palavra / Sinal' : 'Frase Completa'}
+                    </span>
+                    <span class="text-xs font-bold text-duo-muted">${escapeHtml(item.blockTitle)}</span>
+                    ${item.mastered ? '<span class="px-2 py-0.5 rounded-lg text-[11px] font-extrabold bg-duo-greenLight text-duo-greenDark">✓ Dominado</span>' : ''}
+                  </div>
+                  <h4 class="text-base sm:text-lg font-extrabold text-duo-ink mt-1">${escapeHtml(titleText)}</h4>
+                  <p class="text-xs sm:text-sm text-duo-muted mt-0.5">${escapeHtml(subtitleText)}</p>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0">
+                  <button onclick="toggleMastered('${item.id}')" class="px-3 py-1.5 rounded-xl border-2 text-xs font-extrabold ${item.mastered ? 'border-duo-green bg-duo-greenLight text-duo-greenDark' : 'border-duo-border bg-white text-duo-muted hover:text-duo-ink'}">
+                    ${item.mastered ? 'Dominado ✓' : 'Marcar Dominado'}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Video Link Input Row -->
+              <div class="flex flex-col sm:flex-row gap-2">
+                <input
+                  id="video-input-${item.id}"
+                  type="url"
+                  value="${escapeHtml(item.videoUrl || '')}"
+                  placeholder="Cola aqui link YouTube (ex.: https://youtu.be/abc?t=15) ou .mp4 / .webm"
+                  class="flex-1 px-3.5 py-2 rounded-2xl border-2 border-duo-border text-xs sm:text-sm font-medium focus:outline-none focus:border-duo-blue"
+                />
+                <button onclick="saveVideoLink('${item.id}')" class="btn-3d btn-green px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap">
+                  Guardar Vídeo
+                </button>
+                ${hasVid ? `<button onclick="clearVideoLink('${item.id}')" class="btn-3d btn-neutral px-3 py-2 rounded-2xl font-bold text-xs text-duo-redDark">Remover</button>` : ''}
+              </div>
+
+              ${hasVid ? `<div class="pt-1 max-w-xl">${renderVideoPlayerHTML(item.videoUrl, titleText)}</div>` : ''}
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function saveVideoLink(itemId) {
+      const input = document.getElementById(`video-input-${itemId}`);
+      if (!input) return;
+      const val = input.value.trim();
+      if (!val) {
+        showToast('Cola primeiro um link de vídeo válido.', 'error');
+        return;
+      }
+      const found = findItemById(itemId);
+      if (!found) return;
+      found.item.videoUrl = val;
+      saveState();
+      renderStreakAndStats();
+      renderUnits();
+      renderMediaBank();
+      addPracticeMinutes(getTodayKey(), 1, `Adicionou vídeo a "${found.item.gloss || found.item.text}"`);
+      showToast('Vídeo guardado com sucesso!', 'success');
+    }
+
+    function clearVideoLink(itemId) {
+      const found = findItemById(itemId);
+      if (!found) return;
+      found.item.videoUrl = '';
+      saveState();
+      renderStreakAndStats();
+      renderUnits();
+      renderMediaBank();
+      showToast('Link de vídeo removido.', 'info');
+    }
+
+    // =========================================================================
+    // 9. INTERACTIVE EXERCISES (LEARN / RECOGNIZE / SENTENCE BUILDING)
+    // =========================================================================
+    let exerciseIndex = 0;
+    let sentenceSelectedGlosses = [];
+    let sentenceShuffledPool = [];
+    let sentenceCheckedResult = null;
+    let recognizeAnswered = null;
+
+    function populateExerciseBlockSelect() {
+      const select = document.getElementById('exercise-block-select');
+      if (!select) return;
+      const current = select.value;
+      const options = [`<option value="ALL">Todos os Blocos (Unidade 1 A1)</option>`];
+      for (const u of state.units) {
+        for (const b of u.blocks) {
+          options.push(`<option value="${b.id}">${escapeHtml(u.level)} • ${escapeHtml(b.title)}</option>`);
+        }
+      }
+      select.innerHTML = options.join('');
+      if ([...select.options].some((o) => o.value === current)) {
+        select.value = current;
+      }
+    }
+
+    function selectExerciseMode(mode) {
+      state.exerciseMode = mode;
+      saveState();
+      resetExerciseSession();
+    }
+
+    function startBlockPractice(blockId, mode) {
+      state.exerciseMode = mode;
+      saveState();
+      switchTab('pratica');
+      const select = document.getElementById('exercise-block-select');
+      if (select) select.value = blockId;
+      resetExerciseSession();
+    }
+
+    function resetExerciseSession() {
+      exerciseIndex = 0;
+      sentenceSelectedGlosses = [];
+      sentenceShuffledPool = [];
+      sentenceCheckedResult = null;
+      recognizeAnswered = null;
+      renderExerciseStage();
+    }
+
+    function getPoolForCurrentMode() {
+      const blockId = document.getElementById('exercise-block-select')?.value || 'ALL';
+      const items = getAllItems(blockId);
+      if (state.exerciseMode === 'sentence') {
+        const sentences = items.filter((i) => i.type === 'sentence');
+        return sentences.length ? sentences : items;
+      }
+      return items;
+    }
+
+    function renderExerciseStage() {
+      const mode = state.exerciseMode || 'learn';
+
+      // Highlight active mode card
+      ['learn', 'recognize', 'sentence'].forEach((m) => {
+        const card = document.getElementById(`mode-card-${m}`);
+        if (!card) return;
+        const active = m === mode;
+        card.className = `mode-card text-left p-5 rounded-3xl border-2 transition-all ${
+          active
+            ? 'border-duo-green bg-duo-greenLight/25 shadow-sm'
+            : 'border-duo-border bg-white hover:border-duo-blue/50'
+        }`;
+      });
+
+      const stage = document.getElementById('exercise-stage');
+      if (!stage) return;
+
+      const pool = getPoolForCurrentMode();
+      if (!pool.length) {
+        stage.innerHTML = `<div class="text-center py-10 text-duo-muted font-bold">Sem itens neste bloco para treinar.</div>`;
+        return;
+      }
+
+      if (exerciseIndex >= pool.length) {
+        exerciseIndex = 0;
+      }
+
+      const currentItem = pool[exerciseIndex];
+
+      if (mode === 'learn') {
+        renderLearnMode(stage, currentItem, pool.length);
+      } else if (mode === 'recognize') {
+        renderRecognizeMode(stage, currentItem, pool);
+      } else {
+        renderSentenceBuilderMode(stage, currentItem, pool.length);
+      }
+    }
+
+    function renderLearnMode(stage, item, total) {
+      const isWord = item.type === 'word';
+      const title = isWord ? item.gloss : item.text;
+      const meaning = isWord ? item.meaning : `${item.translationPt} (${(item.glossSequence || []).join(' + ')})`;
+
+      stage.innerHTML = `
+        <div class="flex items-center justify-between text-xs font-extrabold text-duo-muted mb-4">
+          <span>MODO APRENDER • CARTÃO ${exerciseIndex + 1} DE ${total}</span>
+          <span>${escapeHtml(item.blockTitle)}</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+          <div>
+            ${renderVideoPlayerHTML(item.videoUrl, title)}
+          </div>
+
+          <div class="space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-extrabold ${isWord ? 'bg-duo-blueLight text-duo-blueDark' : 'bg-duo-orangeLight text-duo-orangeDark'}">
+              ${isWord ? 'SINAL / GLOSA BSL' : 'FRASE COMPLETA BSL'}
+            </div>
+
+            <div>
+              <h3 class="text-2xl sm:text-3xl font-extrabold text-duo-ink">${escapeHtml(title)}</h3>
+              <p class="text-base sm:text-lg font-bold text-duo-greenDark mt-1">${escapeHtml(meaning)}</p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-duo-surface border border-duo-border space-y-1">
+              <div class="text-xs font-extrabold uppercase text-duo-muted">Nota de Expressão Facial &amp; Gramática</div>
+              <p class="text-xs sm:text-sm text-duo-ink leading-relaxed">${escapeHtml(item.note || 'Mantém contacto visual e expressão facial coerente.')}</p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5 pt-1">
+              <button onclick="toggleMastered('${item.id}'); renderExerciseStage();" class="btn-3d ${item.mastered ? 'btn-neutral' : 'btn-green'} px-4 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm">
+                ${item.mastered ? '✓ Já Dominado' : 'Marcar como Dominado'}
+              </button>
+              <button onclick="openItemInBank('${item.id}')" class="btn-3d btn-neutral px-4 py-2.5 rounded-2xl font-bold text-xs sm:text-sm">
+                ${item.videoUrl ? 'Editar Vídeo' : '+ Ligar Vídeo'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-duo-border flex items-center justify-between">
+          <button onclick="prevExercise(${total})" class="btn-3d btn-neutral px-4 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm">
+            ← Anterior
+          </button>
+          <button onclick="nextExercise(${total})" class="btn-3d btn-blue px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm">
+            Próximo Cartão →
+          </button>
+        </div>
+      `;
+    }
+
+    function renderRecognizeMode(stage, item, allPool) {
+      const isWord = item.type === 'word';
+      const correctLabel = isWord ? `${item.gloss} — ${item.meaning}` : `${item.text} (${item.translationPt})`;
+
+      // Build 3 distractors deterministically based on item.id + exerciseIndex
+      const candidates = allPool.filter((x) => x.id !== item.id && x.type === item.type);
+      const fallbackPool = allPool.filter((x) => x.id !== item.id);
+      const sourceList = candidates.length >= 3 ? candidates : fallbackPool;
+
+      const options = [correctLabel];
+      const step = sourceList.length > 0 ? (exerciseIndex * 3 + 1) % sourceList.length : 0;
+      for (let i = 0; i < sourceList.length && options.length < 4; i++) {
+        const cand = sourceList[(step + i) % sourceList.length];
+        const lbl = cand.type === 'word' ? `${cand.gloss} — ${cand.meaning}` : `${cand.text} (${cand.translationPt})`;
+        if (!options.includes(lbl)) options.push(lbl);
+      }
+
+      // Deterministic shuffle for this question
+      const shuffledOptions = [...options].sort((a, b) => {
+        const ha = (a.length * 17 + exerciseIndex * 31) % 97;
+        const hb = (b.length * 17 + exerciseIndex * 31) % 97;
+        return ha - hb;
+      });
+
+      stage.innerHTML = `
+        <div class="flex items-center justify-between text-xs font-extrabold text-duo-muted mb-4">
+          <span>RECONHECIMENTO VISUAL • QUESTÃO ${exerciseIndex + 1} DE ${allPool.length}</span>
+          <span>${escapeHtml(item.blockTitle)}</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <div>
+            ${renderVideoPlayerHTML(item.videoUrl, 'Sinal em avaliação')}
+            <p class="text-xs text-duo-muted mt-2">
+              Dica: observa o movimento das mãos e a expressão facial antes de escolheres.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <h3 class="text-lg sm:text-xl font-extrabold text-duo-ink">
+              O que significa este ${isWord ? 'sinal BSL' : 'frase em BSL'}?
+            </h3>
+
+            <div class="space-y-2.5">
+              ${shuffledOptions
+                .map((opt) => {
+                  const chosen = recognizeAnswered === opt;
+                  const isCorrectOpt = opt === correctLabel;
+                  let btnStyle = 'border-duo-border bg-white hover:border-duo-blue text-duo-ink';
+                  if (recognizeAnswered !== null) {
+                    if (isCorrectOpt) {
+                      btnStyle = 'border-duo-green bg-duo-greenLight text-duo-greenDark';
+                    } else if (chosen) {
+                      btnStyle = 'border-duo-red bg-duo-redLight text-duo-redDark';
+                    }
+                  }
+                  return `
+                    <button
+                      ${recognizeAnswered !== null ? 'disabled' : ''}
+                      onclick="submitRecognizeAnswer('${escapeHtml(opt.replace(/'/g, "\\'"))}', '${escapeHtml(correctLabel.replace(/'/g, "\\'"))}', '${item.id}')"
+                      class="w-full text-left p-3.5 rounded-2xl border-2 font-bold text-xs sm:text-sm transition-colors ${btnStyle}"
+                    >
+                      ${escapeHtml(opt)}
+                    </button>
+                  `;
+                })
+                .join('')}
+            </div>
+
+            ${
+              recognizeAnswered !== null
+                ? `
+                <div class="p-3.5 rounded-2xl ${recognizeAnswered === correctLabel ? 'bg-duo-greenLight/60 text-duo-greenDark' : 'bg-duo-redLight/60 text-duo-redDark'} text-xs sm:text-sm font-bold">
+                  ${recognizeAnswered === correctLabel ? '🎉 Muito bem! Acertaste.' : `❌ Quase! A resposta correta é: ${escapeHtml(correctLabel)}`}
+                  <div class="font-normal text-duo-ink mt-1">${escapeHtml(item.note || '')}</div>
+                </div>
+              `
+                : ''
+            }
+          </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-duo-border flex items-center justify-between">
+          <button onclick="prevExercise(${allPool.length})" class="btn-3d btn-neutral px-4 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm">
+            ← Anterior
+          </button>
+          <button onclick="nextExercise(${allPool.length})" class="btn-3d btn-green px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm">
+            Próxima Pergunta →
+          </button>
+        </div>
+      `;
+    }
+
+    function submitRecognizeAnswer(chosen, correct, itemId) {
+      recognizeAnswered = chosen;
+      if (chosen === correct) {
+        addPracticeMinutes(getTodayKey(), 1, 'Acertou exercício de reconhecimento BSL');
+        const found = findItemById(itemId);
+        if (found && !found.item.mastered) {
+          found.item.mastered = true;
+          saveState();
+          renderStreakAndStats();
+        }
+      }
+      renderExerciseStage();
+    }
+
+    function ensureSentencePoolInitialized(item) {
+      const targetGlosses = item.glossSequence && item.glossSequence.length ? item.glossSequence : ['BSL', 'PRACTICE'];
+      const distractors = ['TODAY', 'TOMORROW', 'WHAT', 'WHERE', 'PLEASE', 'THANK-YOU', 'GOOD'].filter(
+        (g) => !targetGlosses.includes(g)
+      );
+      const combined = [...targetGlosses, ...distractors.slice(0, 2)];
+
+      // Deterministic shuffle per item + index
+      sentenceShuffledPool = combined
+        .map((gloss, idx) => ({ gloss, uid: `${gloss}-${idx}` }))
+        .sort((a, b) => ((a.uid.charCodeAt(0) * 13 + exerciseIndex * 7) % 29) - ((b.uid.charCodeAt(0) * 13 + exerciseIndex * 7) % 29));
+      sentenceSelectedGlosses = [];
+      sentenceCheckedResult = null;
+    }
+
+    function renderSentenceBuilderMode(stage, item, total) {
+      const targetGlosses = item.glossSequence && item.glossSequence.length ? item.glossSequence : ['BSL', 'PRACTICE'];
+      if (sentenceShuffledPool.length === 0) {
+        ensureSentencePoolInitialized(item);
+      }
+
+      const selectedIds = new Set(sentenceSelectedGlosses.map((x) => x.uid));
+
+      stage.innerHTML = `
+        <div class="flex items-center justify-between text-xs font-extrabold text-duo-muted mb-4">
+          <span>CONSTRUÇÃO DE FRASES • FRASE ${exerciseIndex + 1} DE ${total}</span>
+          <span>${escapeHtml(item.blockTitle)}</span>
+        </div>
+
+        <div class="space-y-5">
+          <div>
+            <div class="text-xs font-extrabold uppercase text-duo-muted">Frase alvo</div>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-duo-ink mt-0.5">${escapeHtml(item.text)}</h3>
+            <p class="text-xs sm:text-sm text-duo-muted">Tradução PT: <strong>${escapeHtml(item.translationPt)}</strong></p>
+          </div>
+
+          <!-- Selected Glosses Slot Area -->
+          <div class="min-h-[72px] p-3.5 rounded-2xl border-2 border-dashed border-duo-blue/50 bg-duo-blueLight/25 flex flex-wrap items-center gap-2">
+            ${
+              sentenceSelectedGlosses.length === 0
+                ? `<span class="text-xs font-bold text-duo-muted">Clica nas glosas abaixo para montar a sequência BSL...</span>`
+                : sentenceSelectedGlosses
+                    .map(
+                      (tok) => `
+                      <button onclick="removeGlossToken('${tok.uid}')" class="px-3 py-1.5 rounded-xl bg-duo-blue text-white font-extrabold text-xs sm:text-sm shadow-[0_3px_0_#1485BD] hover:opacity-95">
+                        ${escapeHtml(tok.gloss)} ✕
+                      </button>
+                    `
+                    )
+                    .join('')
+            }
+          </div>
+
+          <!-- Available Gloss Chips -->
+          <div class="flex flex-wrap gap-2">
+            ${sentenceShuffledPool
+              .map((tok) => {
+                const used = selectedIds.has(tok.uid);
+                return `
+                  <button
+                    ${used ? 'disabled' : ''}
+                    onclick="addGlossToken('${tok.uid}')"
+                    class="btn-3d btn-neutral px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm ${used ? 'opacity-35 cursor-not-allowed' : ''}"
+                  >
+                    ${escapeHtml(tok.gloss)}
+                  </button>
+                `;
+              })
+              .join('')}
+          </div>
+
+          <!-- Check & Reset Buttons -->
+          <div class="flex flex-wrap items-center gap-2.5">
+            <button onclick="checkSentenceOrder('${item.id}')" class="btn-3d btn-green px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm">
+              Verificar Sequência
+            </button>
+            <button onclick="ensureSentencePoolInitialized(getPoolForCurrentMode()[exerciseIndex]); renderExerciseStage();" class="btn-3d btn-neutral px-4 py-2.5 rounded-2xl font-bold text-xs sm:text-sm">
+              Limpar
+            </button>
+          </div>
+
+          ${
+            sentenceCheckedResult
+              ? `
+              <div class="p-4 rounded-2xl border-2 ${sentenceCheckedResult.ok ? 'border-duo-green bg-duo-greenLight/40 text-duo-greenDark' : 'border-duo-orange bg-duo-orangeLight/50 text-duo-orangeDark'} space-y-2">
+                <div class="font-extrabold text-sm">
+                  ${sentenceCheckedResult.ok ? '✅ Excelente! Ordem BSL correta.' : `💡 Ordem sugerida: ${escapeHtml(targetGlosses.join(' + '))}`}
+                </div>
+                <p class="text-xs sm:text-sm text-duo-ink">${escapeHtml(item.note || '')}</p>
+                <div class="pt-2 max-w-lg">
+                  ${renderVideoPlayerHTML(item.videoUrl, item.text)}
+                </div>
+              </div>
+            `
+              : ''
+          }
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-duo-border flex items-center justify-between">
+          <button onclick="prevExercise(${total})" class="btn-3d btn-neutral px-4 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm">
+            ← Anterior
+          </button>
+          <button onclick="nextExercise(${total})" class="btn-3d btn-blue px-5 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm">
+            Próxima Frase →
+          </button>
+        </div>
+      `;
+    }
+
+    function addGlossToken(uid) {
+      if (sentenceCheckedResult) return;
+      const found = sentenceShuffledPool.find((x) => x.uid === uid);
+      if (!found) return;
+      if (!sentenceSelectedGlosses.some((x) => x.uid === uid)) {
+        sentenceSelectedGlosses.push(found);
+        renderExerciseStage();
+      }
+    }
+
+    function removeGlossToken(uid) {
+      if (sentenceCheckedResult) return;
+      sentenceSelectedGlosses = sentenceSelectedGlosses.filter((x) => x.uid !== uid);
+      renderExerciseStage();
+    }
+
+    function checkSentenceOrder(itemId) {
+      const found = findItemById(itemId);
+      if (!found) return;
+      const target = (found.item.glossSequence || []).map((g) => g.toUpperCase());
+      const userSeq = sentenceSelectedGlosses.map((x) => x.gloss.toUpperCase());
+      const ok = target.length === userSeq.length && target.every((val, i) => val === userSeq[i]);
+
+      sentenceCheckedResult = { ok };
+      addPracticeMinutes(getTodayKey(), 1, `Praticou montagem da frase "${found.item.text}"`);
+      if (ok && !found.item.mastered) {
+        found.item.mastered = true;
+        saveState();
+        renderStreakAndStats();
+      }
+      renderExerciseStage();
+    }
+
+    function nextExercise(total) {
+      exerciseIndex = (exerciseIndex + 1) % total;
+      sentenceShuffledPool = [];
+      sentenceSelectedGlosses = [];
+      sentenceCheckedResult = null;
+      recognizeAnswered = null;
+      renderExerciseStage();
+    }
+
+    function prevExercise(total) {
+      exerciseIndex = (exerciseIndex - 1 + total) % total;
+      sentenceShuffledPool = [];
+      sentenceSelectedGlosses = [];
+      sentenceCheckedResult = null;
+      recognizeAnswered = null;
+      renderExerciseStage();
+    }
+
+    // =========================================================================
+    // 10. CALENDAR & PRACTICE TIME LOGGING
+    // =========================================================================
+    function changeCalendarMonth(deltaMonths) {
+      const cur = parseDateKeyLocal(state.calendarViewDate || getTodayKey());
+      cur.setMonth(cur.getMonth() + deltaMonths);
+      state.calendarViewDate = formatDateKeyLocal(cur);
+      saveState();
+      renderCalendar();
+    }
+
+    function resetCalendarToToday() {
+      const todayKey = getTodayKey();
+      state.calendarViewDate = todayKey;
+      state.selectedCalendarDate = todayKey;
+      saveState();
+      renderCalendar();
+    }
+
+    function selectCalendarDay(dateKey) {
+      state.selectedCalendarDate = dateKey;
+      const dateInput = document.getElementById('log-date-input');
+      if (dateInput) dateInput.value = dateKey;
+      saveState();
+      renderCalendar();
+    }
+
+    function setQuickMinutes(mins) {
+      const input = document.getElementById('log-minutes-input');
+      if (input) input.value = mins;
+    }
+
+    function handleManualTimeLog() {
+      const dateVal = document.getElementById('log-date-input')?.value || getTodayKey();
+      const minsVal = Number(document.getElementById('log-minutes-input')?.value || 0);
+      const noteVal = (document.getElementById('log-note-input')?.value || '').trim();
+
+      if (!dateVal || isNaN(minsVal) || minsVal <= 0) {
+        showToast('Indica um número de minutos válido (maior que 0).', 'error');
+        return;
+      }
+
+      addPracticeMinutes(dateVal, minsVal, noteVal);
+      state.selectedCalendarDate = dateVal;
+      state.calendarViewDate = dateVal;
+      saveState();
+      document.getElementById('log-note-input').value = '';
+      renderCalendar();
+      showToast(`Registados ${minsVal} min em ${dateVal}! 🔥`, 'success');
+    }
+
+    function renderCalendar() {
+      const viewDate = parseDateKeyLocal(state.calendarViewDate || getTodayKey());
+      const year = viewDate.getFullYear();
+      const month = viewDate.getMonth();
+
+      const monthTitleEl = document.getElementById('calendar-month-title');
+      if (monthTitleEl) {
+        monthTitleEl.textContent = viewDate.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' });
+      }
+
+      const logDateInput = document.getElementById('log-date-input');
+      if (logDateInput && !logDateInput.value) {
+        logDateInput.value = state.selectedCalendarDate || getTodayKey();
+      }
+
+      // First day of month (Monday = 0 .. Sunday = 6)
+      const firstDayOfMonth = new Date(year, month, 1);
+      const startOffset = (firstDayOfMonth.getDay() + 6) % 7;
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      const todayKey = getTodayKey();
+      const selectedKey = state.selectedCalendarDate || todayKey;
+      const gridEl = document.getElementById('calendar-days-grid');
+      if (!gridEl) return;
+
+      const cells = [];
+      for (let i = 0; i < startOffset; i++) {
+        cells.push(`<div class="h-14 sm:h-16 rounded-2xl bg-duo-surface/40"></div>`);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dObj = new Date(year, month, day);
+        const key = formatDateKeyLocal(dObj);
+        const entry = state.practiceLog[key];
+        const mins = entry ? Number(entry.minutes) || 0 : 0;
+        const practiced = mins > 0;
+        const isToday = key === todayKey;
+        const isSelected = key === selectedKey;
+
+        let bgClass = 'bg-duo-surface/70 border-duo-border text-duo-ink hover:border-duo-blue/50';
+        if (practiced && mins >= 15) {
+          bgClass = 'bg-duo-greenLight border-duo-green text-duo-greenDark';
+        } else if (practiced) {
+          bgClass = 'bg-duo-orangeLight border-duo-orange text-duo-orangeDark';
+        }
+
+        const ringClass = isSelected ? 'ring-2 ring-duo-blue ring-offset-1' : '';
+
+        cells.push(`
+          <button
+            onclick="selectCalendarDay('${key}')"
+            class="h-14 sm:h-16 rounded-2xl border-2 p-1.5 flex flex-col items-center justify-between transition-all ${bgClass} ${ringClass}"
+          >
+            <div class="w-full flex items-center justify-between px-0.5">
+              <span class="text-xs font-extrabold ${isToday ? 'underline' : ''}">${day}</span>
+              ${practiced ? '<span class="text-xs leading-none">🔥</span>' : ''}
+            </div>
+            <span class="text-[10px] sm:text-[11px] font-extrabold truncate max-w-full">
+              ${practiced ? `${Math.round(mins)}m` : '—'}
+            </span>
+          </button>
+        `);
+      }
+
+      gridEl.innerHTML = cells.join('');
+
+      // Selected Day Detail
+      const detailEl = document.getElementById('calendar-day-detail');
+      if (detailEl) {
+        const selEntry = state.practiceLog[selectedKey];
+        const selMins = selEntry ? Math.round(Number(selEntry.minutes) || 0) : 0;
+        const selNote = selEntry?.note || '';
+        const prettyDate = parseDateKeyLocal(selectedKey).toLocaleDateString('pt-PT', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        });
+
+        detailEl.innerHTML = `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <div class="text-xs font-extrabold uppercase text-duo-muted">Dia selecionado</div>
+              <div class="font-extrabold text-base text-duo-ink capitalize">${escapeHtml(prettyDate)}</div>
+            </div>
+            <div class="px-3.5 py-1.5 rounded-2xl font-extrabold text-sm ${selMins > 0 ? 'bg-duo-greenLight text-duo-greenDark' : 'bg-white border border-duo-border text-duo-muted'}">
+              ${selMins > 0 ? `🔥 ${selMins} ${selMins === 1 ? 'minuto' : 'minutos'} praticados` : 'Sem prática registada'}
+            </div>
+          </div>
+          ${selNote ? `<p class="text-xs text-duo-muted mt-2"><strong>Notas:</strong> ${escapeHtml(selNote)}</p>` : ''}
+        `;
+      }
+    }
+
+    // =========================================================================
+    // 11. EXPORT & IMPORT JSON BACKUP
+    // =========================================================================
+    function exportProgressJSON() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `bsl-quest-backup-${getTodayKey()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Progresso e banco de vídeos exportados!', 'success');
+    }
+
+    function importProgressJSON(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const imported = JSON.parse(String(reader.result));
+          if (!Array.isArray(imported.units)) {
+            showToast('Ficheiro JSON inválido para BSL Quest.', 'error');
+            return;
+          }
+          state = {
+            ...state,
+            ...imported,
+            practiceLog: imported.practiceLog || {},
+          };
+          saveState();
+          renderStreakAndStats();
+          renderUnits();
+          renderMediaBank();
+          renderCalendar();
+          renderExerciseStage();
+          showToast('Backup importado com sucesso!', 'success');
+        } catch {
+          showToast('Não foi possível ler o ficheiro JSON.', 'error');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    // =========================================================================
+    // 12. BOOTSTRAP APP
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      renderStreakAndStats();
+      switchTab(state.activeTab || 'trilha');
+    });
+  </script>
+</body>
+</html>
