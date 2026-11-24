@@ -325,7 +325,7 @@
         <div>
           <h2 class="text-xl sm:text-2xl font-extrabold text-duo-ink">Meu Banco de Vídeos BSL</h2>
           <p class="text-sm text-duo-muted mt-0.5">
-            Cola links do <strong>YouTube</strong> (com ou sem marca de tempo, ex.: <code>?t=14s</code>) ou links diretos de vídeo (<code>.mp4</code> / <code>.webm</code>) para cada palavra e frase.
+            Cola links do <strong>SignBSL</strong> (ex.: <code>https://www.signbsl.com/sign/hello#cnyia0upyj</code>), <strong>YouTube</strong> (com ou sem marca de tempo, ex.: <code>?t=14s</code>) ou links diretos de vídeo (<code>.mp4</code> / <code>.webm</code>) para cada palavra e frase.
           </p>
         </div>
 
@@ -924,7 +924,7 @@
     }
 
     // =========================================================================
-    // 4. VIDEO URL PARSER & EMBED RENDERER (YouTube with timestamps + MP4/WebM)
+    // 4. VIDEO URL PARSER & EMBED RENDERER (SignBSL + YouTube + MP4/WebM)
     // =========================================================================
     function parseTimestampToSeconds(val) {
       if (!val) return 0;
@@ -973,88 +973,109 @@
     }
 
     function extractSignBSLCode(rawUrl) {
-  const trimmed = (rawUrl || '').trim();
-  if (!trimmed) return '';
+      const trimmed = (rawUrl || '').trim();
+      if (!trimmed) return '';
 
-  try {
-    const url = new URL(trimmed);
-    if (url.hostname.includes('signbsl.com') && url.hash) {
-      return url.hash.replace(/^#/, '').split('?')[0].trim();
-    }
-  } catch {
-    if (trimmed.includes('signbsl.com') && trimmed.includes('#')) {
-      return trimmed.split('#')[1].split('?')[0].trim();
-    }
-  }
-
-  return '';
-}
-
-function renderVideoPlayerHTML(videoUrl, label = 'Sinal BSL') {
-  const trimmed = (videoUrl || '').trim();
-  if (!trimmed) {
-    return `
-      <div class="rounded-2xl border-2 border-dashed border-duo-border bg-duo-surface p-6 text-center space-y-2">
-        <div class="text-3xl">🎥</div>
-        <div class="text-sm font-extrabold text-duo-ink">Sem vídeo ligado ainda para "${escapeHtml(label)}"</div>
-        <p class="text-xs text-duo-muted max-w-md mx-auto">
-          Cola um link do SignBSL com código (ex.: <code>https://www.signbsl.com/sign/hello#cnyia0upyj</code>), YouTube (<code>?t=12</code>) ou <code>.mp4</code> / <code>.webm</code> no <strong>Banco de Vídeos</strong> para ver o vídeo aqui.
-        </p>
-      </div>
-    `;
-  }
-
-  const signBslCode = extractSignBSLCode(trimmed);
-  if (signBslCode) {
-    const cleanHref = trimmed.split('#')[0] || `https://www.signbsl.com/sign/${signBslCode}`;
-    const containerId = `signbsl-box-${signBslCode}-${Math.random().toString(36).slice(2, 7)}`;
-
-    setTimeout(() => {
-      const box = document.getElementById(containerId);
-      if (box && typeof renderSignBSLFromUrl === 'function') {
-        renderSignBSLFromUrl(trimmed, box);
+      try {
+        const url = new URL(trimmed);
+        if (url.hostname.includes('signbsl.com') && url.hash) {
+          return url.hash.replace(/^#/, '').split('?')[0].trim();
+        }
+      } catch {
+        if (trimmed.includes('signbsl.com') && trimmed.includes('#')) {
+          return trimmed.split('#')[1].split('?')[0].trim();
+        }
       }
-    }, 0);
 
-    return `
-      <div class="rounded-2xl border-2 border-duo-border bg-duo-surface p-4 space-y-2">
-        <div id="${containerId}" class="min-h-[140px] flex items-center justify-center">
-          <blockquote class="signbsldata-embed" data-vidref="${escapeHtml(signBslCode)}">
-            <a href="${escapeHtml(cleanHref)}">${escapeHtml(label)}</a>
-          </blockquote>
-        </div>
-        <div class="text-right">
-          <a href="${escapeHtml(cleanHref)}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-duo-blueDark underline">
-            Abrir no SignBSL ↗
-          </a>
-        </div>
-      </div>
-    `;
-  }
+      if (!trimmed.includes('/') && !trimmed.includes('http') && trimmed.length >= 4) {
+        return trimmed;
+      }
 
-  const yt = extractYouTubeEmbed(trimmed);
-  if (yt) {
-    return `
-      <div class="rounded-2xl overflow-hidden border-2 border-duo-border bg-black aspect-video w-full">
-        <iframe
-          src="${yt.embedUrl}"
-          title="${escapeHtml(label)}"
-          class="w-full h-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        ></iframe>
-      </div>
-    `;
-  }
+      return '';
+    }
 
-  return `
-    <div class="rounded-2xl overflow-hidden border-2 border-duo-border bg-black aspect-video w-full">
-      <video controls playsinline preload="metadata" class="w-full h-full object-contain bg-black" src="${escapeHtml(trimmed)}">
-        O teu navegador não suporta reprodução deste formato de vídeo.
-      </video>
-    </div>
-  `;
-}
+    function renderSignBSLFromUrl(urlOrCode, containerElement) {
+      if (!urlOrCode || !containerElement) return false;
+
+      const raw = String(urlOrCode).trim();
+      const vidRef = extractSignBSLCode(raw);
+      if (!vidRef) return false;
+
+      containerElement.innerHTML = '';
+
+      const blockquote = document.createElement('blockquote');
+      blockquote.className = 'signbsldata-embed';
+      blockquote.setAttribute('data-vidref', vidRef);
+
+      const link = document.createElement('a');
+      link.href = raw.startsWith('http')
+        ? raw.split('#')[0]
+        : `https://www.signbsl.com/sign/${vidRef}`;
+      link.textContent = 'Ver sinal no SignBSL';
+
+      blockquote.appendChild(link);
+      containerElement.appendChild(blockquote);
+
+      const existingScript = document.querySelector(
+        'script[src="https://embed.signbsl.com/widgets.js"]'
+      );
+
+      if (!existingScript) {
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://embed.signbsl.com/widgets.js';
+        script.charset = 'utf-8';
+        document.body.appendChild(script);
+      } else if (window.signbsl && typeof window.signbsl.load === 'function') {
+        window.signbsl.load();
+      }
+
+      return true;
+    }
+
+    function renderVideoPlayerHTML(videoUrl, label = 'Sinal BSL') {
+      const trimmed = (videoUrl || '').trim();
+      if (!trimmed) {
+        return `
+          <div class="rounded-2xl border-2 border-dashed border-duo-border bg-duo-surface p-6 text-center space-y-2">
+            <div class="text-3xl">🎥</div>
+            <div class="text-sm font-extrabold text-duo-ink">Sem vídeo ligado ainda para "${escapeHtml(label)}"</div>
+            <p class="text-xs text-duo-muted max-w-md mx-auto">
+              Cola um link do SignBSL (ex.: <code>https://www.signbsl.com/sign/hello#cnyia0upyj</code>), YouTube (<code>?t=12</code>) ou <code>.mp4</code> / <code>.webm</code> no <strong>Banco de Vídeos</strong> para ver o vídeo aqui.
+            </p>
+          </div>
+        `;
+      }
+
+      const signBslCode = extractSignBSLCode(trimmed);
+      if (signBslCode) {
+        const cleanHref = trimmed.startsWith('http')
+          ? trimmed.split('#')[0]
+          : `https://www.signbsl.com/sign/${signBslCode}`;
+        const containerId = `signbsl-box-${signBslCode}-${Math.random().toString(36).slice(2, 7)}`;
+
+        setTimeout(() => {
+          const box = document.getElementById(containerId);
+          if (box) {
+            renderSignBSLFromUrl(trimmed, box);
+          }
+        }, 0);
+
+        return `
+          <div class="rounded-2xl border-2 border-duo-border bg-duo-surface p-4 space-y-2">
+            <div id="${containerId}" class="min-h-[140px] flex items-center justify-center">
+              <blockquote class="signbsldata-embed" data-vidref="${escapeHtml(signBslCode)}">
+                <a href="${escapeHtml(cleanHref)}">${escapeHtml(label)}</a>
+              </blockquote>
+            </div>
+            <div class="text-right">
+              <a href="${escapeHtml(cleanHref)}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-duo-blueDark underline">
+                Abrir no SignBSL ↗
+              </a>
+            </div>
+          </div>
+        `;
+      }
 
       const yt = extractYouTubeEmbed(trimmed);
       if (yt) {
@@ -1402,7 +1423,7 @@ function renderVideoPlayerHTML(videoUrl, label = 'Sinal BSL') {
     }
 
     // =========================================================================
-    // 8. MEDIA BANK (ADD / UPDATE YOUTUBE & MP4/WEBM LINKS)
+    // 8. MEDIA BANK (ADD / UPDATE SIGNBSL, YOUTUBE & MP4/WEBM LINKS)
     // =========================================================================
     let highlightedItemId = null;
 
@@ -1511,7 +1532,7 @@ function renderVideoPlayerHTML(videoUrl, label = 'Sinal BSL') {
                   id="video-input-${item.id}"
                   type="url"
                   value="${escapeHtml(item.videoUrl || '')}"
-                  placeholder="Cola aqui link YouTube (ex.: https://youtu.be/abc?t=15) ou .mp4 / .webm"
+                  placeholder="Cola SignBSL (ex.: https://www.signbsl.com/sign/hello#cnyia0upyj), YouTube ou .mp4"
                   class="flex-1 px-3.5 py-2 rounded-2xl border-2 border-duo-border text-xs sm:text-sm font-medium focus:outline-none focus:border-duo-blue"
                 />
                 <button onclick="saveVideoLink('${item.id}')" class="btn-3d btn-green px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm whitespace-nowrap">
@@ -2164,51 +2185,6 @@ function renderVideoPlayerHTML(videoUrl, label = 'Sinal BSL') {
       reader.readAsText(file);
       event.target.value = '';
     }
-    function renderSignBSLFromUrl(urlOrCode, containerElement) {
-  if (!urlOrCode || !containerElement) return false;
-
-  const raw = String(urlOrCode).trim();
-  let vidRef = "";
-
-  if (raw.includes("signbsl.com") && raw.includes("#")) {
-    vidRef = raw.split("#")[1].split("?")[0].trim();
-  } else if (!raw.includes("/") && !raw.includes("http") && raw.length >= 4) {
-    vidRef = raw;
-  }
-
-  if (!vidRef) return false;
-
-  containerElement.innerHTML = "";
-
-  const blockquote = document.createElement("blockquote");
-  blockquote.className = "signbsldata-embed";
-  blockquote.setAttribute("data-vidref", vidRef);
-
-  const link = document.createElement("a");
-  link.href = raw.startsWith("http")
-    ? raw.split("#")[0]
-    : `https://www.signbsl.com/sign/${vidRef}`;
-  link.textContent = "Ver sinal no SignBSL";
-
-  blockquote.appendChild(link);
-  containerElement.appendChild(blockquote);
-
-  const existingScript = document.querySelector(
-    'script[src="https://embed.signbsl.com/widgets.js"]'
-  );
-
-  if (!existingScript) {
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://embed.signbsl.com/widgets.js";
-    script.charset = "utf-8";
-    document.body.appendChild(script);
-  } else if (window.signbsl && typeof window.signbsl.load === "function") {
-    window.signbsl.load();
-  }
-
-  return true;
-}
 
     // =========================================================================
     // 12. BOOTSTRAP APP
