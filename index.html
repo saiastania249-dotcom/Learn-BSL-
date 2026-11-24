@@ -972,19 +972,89 @@
       }
     }
 
-    function renderVideoPlayerHTML(videoUrl, label = 'Sinal BSL') {
-      const trimmed = (videoUrl || '').trim();
-      if (!trimmed) {
-        return `
-          <div class="rounded-2xl border-2 border-dashed border-duo-border bg-duo-surface p-6 text-center space-y-2">
-            <div class="text-3xl">🎥</div>
-            <div class="text-sm font-extrabold text-duo-ink">Sem vídeo ligado ainda para "${escapeHtml(label)}"</div>
-            <p class="text-xs text-duo-muted max-w-md mx-auto">
-              Cola um link do YouTube (ex.: <code>https://youtu.be/...?t=12</code>) ou um link direto <code>.mp4</code> / <code>.webm</code> no <strong>Banco de Vídeos</strong> para ver o vídeo aqui.
-            </p>
-          </div>
-        `;
+    function extractSignBSLCode(rawUrl) {
+  const trimmed = (rawUrl || '').trim();
+  if (!trimmed) return '';
+
+  try {
+    const url = new URL(trimmed);
+    if (url.hostname.includes('signbsl.com') && url.hash) {
+      return url.hash.replace(/^#/, '').split('?')[0].trim();
+    }
+  } catch {
+    if (trimmed.includes('signbsl.com') && trimmed.includes('#')) {
+      return trimmed.split('#')[1].split('?')[0].trim();
+    }
+  }
+
+  return '';
+}
+
+function renderVideoPlayerHTML(videoUrl, label = 'Sinal BSL') {
+  const trimmed = (videoUrl || '').trim();
+  if (!trimmed) {
+    return `
+      <div class="rounded-2xl border-2 border-dashed border-duo-border bg-duo-surface p-6 text-center space-y-2">
+        <div class="text-3xl">🎥</div>
+        <div class="text-sm font-extrabold text-duo-ink">Sem vídeo ligado ainda para "${escapeHtml(label)}"</div>
+        <p class="text-xs text-duo-muted max-w-md mx-auto">
+          Cola um link do SignBSL com código (ex.: <code>https://www.signbsl.com/sign/hello#cnyia0upyj</code>), YouTube (<code>?t=12</code>) ou <code>.mp4</code> / <code>.webm</code> no <strong>Banco de Vídeos</strong> para ver o vídeo aqui.
+        </p>
+      </div>
+    `;
+  }
+
+  const signBslCode = extractSignBSLCode(trimmed);
+  if (signBslCode) {
+    const cleanHref = trimmed.split('#')[0] || `https://www.signbsl.com/sign/${signBslCode}`;
+    const containerId = `signbsl-box-${signBslCode}-${Math.random().toString(36).slice(2, 7)}`;
+
+    setTimeout(() => {
+      const box = document.getElementById(containerId);
+      if (box && typeof renderSignBSLFromUrl === 'function') {
+        renderSignBSLFromUrl(trimmed, box);
       }
+    }, 0);
+
+    return `
+      <div class="rounded-2xl border-2 border-duo-border bg-duo-surface p-4 space-y-2">
+        <div id="${containerId}" class="min-h-[140px] flex items-center justify-center">
+          <blockquote class="signbsldata-embed" data-vidref="${escapeHtml(signBslCode)}">
+            <a href="${escapeHtml(cleanHref)}">${escapeHtml(label)}</a>
+          </blockquote>
+        </div>
+        <div class="text-right">
+          <a href="${escapeHtml(cleanHref)}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-duo-blueDark underline">
+            Abrir no SignBSL ↗
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
+  const yt = extractYouTubeEmbed(trimmed);
+  if (yt) {
+    return `
+      <div class="rounded-2xl overflow-hidden border-2 border-duo-border bg-black aspect-video w-full">
+        <iframe
+          src="${yt.embedUrl}"
+          title="${escapeHtml(label)}"
+          class="w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="rounded-2xl overflow-hidden border-2 border-duo-border bg-black aspect-video w-full">
+      <video controls playsinline preload="metadata" class="w-full h-full object-contain bg-black" src="${escapeHtml(trimmed)}">
+        O teu navegador não suporta reprodução deste formato de vídeo.
+      </video>
+    </div>
+  `;
+}
 
       const yt = extractYouTubeEmbed(trimmed);
       if (yt) {
@@ -2094,6 +2164,51 @@
       reader.readAsText(file);
       event.target.value = '';
     }
+    function renderSignBSLFromUrl(urlOrCode, containerElement) {
+  if (!urlOrCode || !containerElement) return false;
+
+  const raw = String(urlOrCode).trim();
+  let vidRef = "";
+
+  if (raw.includes("signbsl.com") && raw.includes("#")) {
+    vidRef = raw.split("#")[1].split("?")[0].trim();
+  } else if (!raw.includes("/") && !raw.includes("http") && raw.length >= 4) {
+    vidRef = raw;
+  }
+
+  if (!vidRef) return false;
+
+  containerElement.innerHTML = "";
+
+  const blockquote = document.createElement("blockquote");
+  blockquote.className = "signbsldata-embed";
+  blockquote.setAttribute("data-vidref", vidRef);
+
+  const link = document.createElement("a");
+  link.href = raw.startsWith("http")
+    ? raw.split("#")[0]
+    : `https://www.signbsl.com/sign/${vidRef}`;
+  link.textContent = "Ver sinal no SignBSL";
+
+  blockquote.appendChild(link);
+  containerElement.appendChild(blockquote);
+
+  const existingScript = document.querySelector(
+    'script[src="https://embed.signbsl.com/widgets.js"]'
+  );
+
+  if (!existingScript) {
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://embed.signbsl.com/widgets.js";
+    script.charset = "utf-8";
+    document.body.appendChild(script);
+  } else if (window.signbsl && typeof window.signbsl.load === "function") {
+    window.signbsl.load();
+  }
+
+  return true;
+}
 
     // =========================================================================
     // 12. BOOTSTRAP APP
